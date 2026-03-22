@@ -9,10 +9,10 @@ set_target_properties(main PROPERTIES
   Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/mod/main
 )
 
-target_link_libraries(main PRIVATE jsonfortran)
-add_dependencies(main jsonfortran)
+target_link_libraries(main PRIVATE jsonfortran-static)
+add_dependencies(main jsonfortran-static)
 target_include_directories(main PRIVATE
-  $<TARGET_PROPERTY:jsonfortran,Fortran_MODULE_DIRECTORY>
+  $<TARGET_PROPERTY:jsonfortran-static,Fortran_MODULE_DIRECTORY>
 )
 
 target_link_libraries(main PRIVATE static_library_1)

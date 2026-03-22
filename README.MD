@@ -138,6 +138,12 @@ if this command is already runed lately then this is not nesessary future even a
 for f in ./cmake/add_dependencies_scripts/*.sh; do bash "$f"; done
 ```
 
+(parallel version)
+
+```bash
+for f in ./cmake/add_dependencies_scripts/*.sh; do bash "$f" & done; wait
+```
+
 or
 
 ```bash

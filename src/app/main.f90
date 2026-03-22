@@ -63,6 +63,10 @@ implicit none (type, external)
     call json%initialize()
     call json%load_file("output.json")
 
+    print *, "json file text"
+    call json%print()
+    print *
+
     call json%get("name", name)
     call json%get("age", age)
     call json%get("numbers", numbers)
@@ -97,7 +101,10 @@ implicit none (type, external)
     !     data = json.load(file)
     ! print(data)
     ! print(data['name'])
-    end block
+  end block
+  block
+    call execute_command_line("rm -f output.json")
+  end block
 
   ! call test()
 
