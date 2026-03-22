@@ -217,3 +217,6 @@ Source code is available at [fortran-linter](https://github.com/cphyc/fortran-li
 
 This project uses ford for automatic generating code documentation.
 Source is available at [FORD](https://github.com/Fortran-FOSS-Programmers/ford.git)
+
+This project uses json-fortran for creating and writing json files (recommended for input and out data that is used by fortran programs).
+Source is available at [jsonfortran](https://github.com/jacobwilliams/json-fortran.git)

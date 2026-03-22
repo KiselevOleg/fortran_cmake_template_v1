@@ -29,6 +29,9 @@ add_external_dependency(Fortitude_external_dependency_install Fortitude.sh)
 # install ford (documentation generation)
 add_external_dependency(ford_external_dependency_install ford.sh)
 
+# install json-fortran (json files interactions)
+add_external_dependency(jsonfortran_external_dependency_install jsonfortran.sh)
+
 # install all dependencies
 add_custom_target(all_external_dependencies_install)
 add_dependencies(all_external_dependencies_install
@@ -36,4 +39,5 @@ add_dependencies(all_external_dependencies_install
   Fortran_linter_external_dependency_install
   Fortitude_external_dependency_install
   ford_external_dependency_install
+  jsonfortran_external_dependency_install
 )

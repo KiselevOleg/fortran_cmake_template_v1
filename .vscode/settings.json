@@ -1,6 +1,7 @@
 {
   "fortran.linter.includePaths": [
-    "${workspaceFolder}/build/mod_list_all"
+    "${workspaceFolder}/build/mod_list_all",
+    "${workspaceFolder}/build/external_dependencies/json-fortran"
   ],
   // "editor.rulers": [80, 120]
   "editor.rulers": [100]

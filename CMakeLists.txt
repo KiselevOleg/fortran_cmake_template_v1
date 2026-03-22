@@ -51,6 +51,7 @@ if(NOT DEFINED CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Release | Debug" FORCE)
 endif()
 
+
 # ==========================================================
 # SETIINGS
 # ==========================================================
@@ -60,6 +61,8 @@ include(cmake/flags.cmake)
 include(cmake/docs.cmake)
 include(cmake/lint.cmake)
 include(cmake/tests.cmake)
+
+include(cmake/external_libraries.cmake)
 
 # ==========================================================
 # SUB_DIRECTORIES
