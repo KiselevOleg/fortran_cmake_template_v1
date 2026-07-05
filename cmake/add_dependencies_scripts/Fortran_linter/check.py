@@ -14,8 +14,8 @@ def delete_incorrect_warning(text: str) -> str:
       to_remove.append(i)
 
   for index in reversed(to_remove):
-    if index >= 4:
-      lines = lines[:index-4] + lines[index+1:]
+    if index >= 5:
+      lines = lines[:index-5] + lines[index+1:]
     else:
       lines = lines[index+1:]
 

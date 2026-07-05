@@ -39,6 +39,7 @@ target_compile_options(flags_features INTERFACE
   -fbacktrace
   -fno-unsafe-math-optimizations
   -ffp-contract=off
+  -flto
 )
 
 if(ENABLE_PREPROCESSOR_STATE)

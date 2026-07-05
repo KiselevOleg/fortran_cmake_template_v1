@@ -37,24 +37,22 @@ implicit none (type, external)
     end associate
   end procedure integration_template_recalculation_constructor
 
-  recursive complex(dp) module function run( &
-      this, &
-      func, a, b, &
-      integration_element, &
-      eps, &
-      normalized_delta &
-    ) result(res)
-  implicit none (type, external)
-    class(integration_template_recalculation_obj), intent(inout) :: this
-    procedure(projection_function_type) :: func
-    real(dp), intent(in) :: a
-    real(dp), intent(in) :: b
-    class(integration_element_obj), intent(inout) :: integration_element
-    !> required accuracy
-    real(dp), intent(in) :: eps
-    procedure(normalized_delta_type), optional :: normalized_delta
-  !module procedure run
+  module procedure run
     real(dp) :: max_step_half
+
+    interface
+      function func(x)
+      import :: dp
+      implicit none (type, external)
+        real(dp), intent(in) :: x
+      end function func
+      function normalized_delta(x, dx)
+      import :: dp
+      implicit none (type, external)
+        real(dp), intent(in) :: x
+        real(dp), intent(in) :: dx
+      end function normalized_delta
+    end interface
 
     associate(min_step => this%min_step, max_step => this%max_step, init_step => this%init_step)
       call error_assert(location = module_name // &
@@ -131,6 +129,5 @@ implicit none (type, external)
         end do
       end block
     end associate
-  !end procedure run
-  end function run
+  end procedure run
 end submodule integration_template_recalculation_impl
