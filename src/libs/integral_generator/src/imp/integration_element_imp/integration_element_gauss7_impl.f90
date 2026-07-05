@@ -9,19 +9,21 @@ implicit none (type, external)
   module procedure integration_element_gauss7_constructor
   end procedure integration_element_gauss7_constructor
 
-  recursive complex(dp) module function run(this, func, a, b) result(res)
-  implicit none (type, external)
-    class(integration_element_gauss7_obj), intent(in) :: this
-    procedure(projection_function_type) :: func
-    real(dp), intent(in) :: a
-    real(dp), intent(in) :: b
-  !module procedure run
+  module procedure run
     real(dp), parameter :: domain(4) = [&
       0.0000000000d0, 0.405845151377d0, 0.741531185599d0, 0.949107912343d0 &
     ]
     real(dp), parameter :: koef(4) = [&
       0.417959183673d0, 0.381830050505d0, 0.279705391489d0, 0.129484966169d0 &
     ]
+
+    interface
+      function func(x)
+      import :: dp
+      implicit none (type, external)
+        real(dp), intent(in) :: x
+      end function func
+    end interface
 
     call error_assert(location = module_name // &
       ".run", &
@@ -52,6 +54,5 @@ implicit none (type, external)
 
       res = (v + 1d0) * 0.5d0 * (b - a) + a
     end function unnorm
-  !end procedure run
-  end function run
+  end procedure run
 end submodule integration_element_gauss7_impl

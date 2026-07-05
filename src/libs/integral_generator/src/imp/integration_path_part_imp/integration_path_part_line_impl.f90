@@ -16,21 +16,23 @@ implicit none (type, external)
     call this%set_boundary_points(start, end)
   end procedure integration_path_part_line_constructor
 
-  recursive complex(dp) module function projection_function_obj(this, func, x) result(res)
-  implicit none (type, external)
-    class(integration_path_part_line_obj), intent(in) :: this
-    procedure(integrated_function_type) :: func
-    real(dp), intent(in) :: x
-  !module procedure projection_function_obj
+  module procedure projection_function_obj
     complex(dp) :: v
+
+    interface
+      function func(x)
+      import :: dp
+      implicit none (type, external)
+        complex(dp), intent(in) :: x
+      end function func
+    end interface
 
     associate(a => this%get_start_point(), b => this%get_end_point())
       v = a + x * (b - a) / abs(b - a)
 
       res = func(v)
     end associate
-  !end procedure projection_function_obj
-  end function projection_function_obj
+  end procedure projection_function_obj
   module procedure normalized_delta_obj
     call error_assert(location = module_name // &
       ".normalized_delta_obj", &

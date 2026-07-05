@@ -12,7 +12,10 @@ implicit none (type, external)
       message = "a start and an end points must be different", &
       condition = equals(start, end, 1d-7) &
     )
-    if (.not. present(without_checking_curve) .or. without_checking_curve) then
+    !if (.not. present(without_checking_curve) .or. without_checking_curve) then
+    if (.not. present(without_checking_curve)) then
+      call check_curve(curve)
+    else if (without_checking_curve) then
       call check_curve(curve)
     end if
     call error_assert(location = module_name // &
@@ -27,13 +30,16 @@ implicit none (type, external)
     this%scale = scale
   end procedure integration_path_part_custom_curve_constructor
 
-  recursive complex(dp) module function projection_function_obj(this, func, x) result(res)
-  implicit none (type, external)
-    class(integration_path_part_custom_curve_obj), intent(in) :: this
-    procedure(integrated_function_type) :: func
-    real(dp), intent(in) :: x
-  !module procedure projection_function_obj
+  module procedure projection_function_obj
     complex(dp) :: v, n
+
+    interface
+      function func(x)
+      import :: dp
+      implicit none (type, external)
+        complex(dp), intent(in) :: x
+      end function func
+    end interface
 
     associate(a => this%get_start_point(), b => this%get_end_point())
       n = (b - a) / abs(b - a)
@@ -43,8 +49,7 @@ implicit none (type, external)
 
       res = func(v) * abs(b - a) * 0.5d0
     end associate
-  !end procedure projection_function_obj
-  end function projection_function_obj
+  end procedure projection_function_obj
   module procedure normalized_delta_obj
     call error_assert(location = module_name // &
       ".normalized_delta_obj", &
@@ -91,8 +96,10 @@ implicit none (type, external)
 
 
 
+  ! allow(implicit-external-procedures)
   pure subroutine check_curve(f)
-  implicit none (type, external)
+  !implicit none (type, external)
+  implicit none
     procedure(curve_form) :: f
 
     integer(i4) :: i

@@ -893,8 +893,9 @@ contains
 
 
 
+  ! allow(implicit-external-procedures)
   pure complex(dp) function get_norm(curve, scale, a, b, x, dx) result(res)
-  implicit none (type, external)
+  implicit none ! (type, external)
     interface
       pure real(dp) function curve(x)
       import :: dp
