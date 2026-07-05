@@ -1,17 +1,70 @@
 # cmake test template
 
-This project require and supports only gfortran.
+A template project for modern Fortran using CMake and Ninja.
+It is intended as a starting point for modern Fortran projects.
 
-## fast copy
+Features:
 
-clear and rebuild
+- unit testing with pFUnit
+- linting
+- automatic documentation (FORD)
+- dependency management
+- MPI support
+
+This project requires and supports only gfortran.
+
+## Structure
+
+``` text
+.
+├── .github/                     # GitHub Actions / CI
+├── .git/                        # Git metadata
+├── .vscode/                     # VS Code configuration
+│
+├── cmake/                       # CMake modules and scripts
+├── external_dependencies/       # Downloaded external dependencies
+│
+├── src/                         # Project source code
+│   ├── app/                     # Executable application
+│   └── libs/                    # Reusable library components
+│       └── <project_component>/
+│           ├── CMakeLists.txt
+│           ├── include/         # for C interface or facades for large API (not obligatory)
+│           ├── src/
+│           ├── tests/
+│           └── example/         # (not obligatory)
+│
+├── build/                       # Build output (generated)
+│   ├── main                     # Executable
+│   ├── docs/                    # FORD documentation
+│   ├── depends.dot              # Graphviz source
+│   ├── depends.png              # Dependency graph
+│   └── src/
+│       └── libs/
+│           └── <project_component>/
+│               ├── <project_component>.a
+│               └── tests/
+│                   └── <test_executable>
+│
+├── CMakeLists.txt               # Top-level build configuration (connects all project components)
+├── ford.md                      # FORD configuration
+├── install_external_dependencies_manually.md
+├── README.md                    # Project documentation
+├── .gitignore
+├── .gitattributes
+└── .editorconfig
+```
+
+## Quick start (fast copy)
+
+Clean and rebuild
 
 ```bash
-# clear
+# Clean
 clear
 rm -fr ./build
-# rebuild
-cmake -G Ninja -S . -B build -DCMAKE_BUILD_TYPE=Debug
+# Rebuild
+cmake -G Ninja -S . -B build -DCMAKE_BUILD_TYPE=Debug --graphviz=./build/depends.dot
 cmake --build build --target all
 clear
 cmake --build build --target lint
@@ -25,15 +78,20 @@ run
 ./build/main
 ```
 
-creating dependency graph
+Generate dependency graph
 
 ```bash
-cmake -G Ninja -S . -B build -DCMAKE_BUILD_TYPE=Release --graphviz=./build/depends.dot
-dot -Tpng -o build/depends.png build/depends.dot //install graphviz
+# requires to add --graphviz=./build/depends.dot
+# cmake -G Ninja -S . -B build -DCMAKE_BUILD_TYPE=Release --graphviz=./build/depends.dot
+dot -Tpng -o build/depends.png build/depends.dot
 ```
 
-## required
+To add new code to the libs directory it is recommended to use pre-prepared code as an example.
 
+## Requirements
+
+![Fortran](https://img.shields.io/badge/Fortran-2018-blue)
+![gfortran](https://img.shields.io/badge/gfortran-15+-orange)
 gfortran 15+
 
 ``` bash
@@ -47,6 +105,7 @@ sudo pacman -S gcc
 gfortran --version
 ```
 
+![CMake](https://img.shields.io/badge/CMake-3.24+-green)
 cmake 3.24+
 
 ``` bash
@@ -60,6 +119,7 @@ sudo pacman -S cmake
 cmake --version
 ```
 
+![Ninja](https://img.shields.io/badge/Ninja-1.13+-brightgreen?logo=ninja&logoColor=white)
 ninja 1.13+
 
 ``` bash
@@ -73,6 +133,7 @@ sudo pacman -S extra/ninja
 ninja --version
 ```
 
+![MPI](https://img.shields.io/badge/MPI-5+-blue)
 mpi 5+
 
 ``` bash
@@ -88,6 +149,7 @@ sudo pacman -S openmpi
 mpirun --version
 ```
 
+![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)
 python 3.11+
 
 ```bash
@@ -103,22 +165,30 @@ python3 --version
 
 ```
 
+![Graphviz](https://img.shields.io/badge/Graphviz-required-9900CC)
 graphviz
 
 ```bash
 # apt
-sudo apt install extra/graphviz
+sudo apt install graphviz
 
 # pacman
 sudo pacman -S extra/graphviz
 ```
 
-## use
+## Usage
 
-compilation
+### Installation
+
+```bash
+git clone https://github.com/KiselevOleg/fortran_cmake_template_v1.git
+```
+
+### Build
 
 ```bash
 cmake -G Ninja -S . -B build -DCMAKE_BUILD_TYPE=Debug
+# or
 cmake -G Ninja -S . -B build -DCMAKE_BUILD_TYPE=Release
 ```
 
@@ -128,11 +198,12 @@ list of all targets
 cmake --build build --target help
 ```
 
-install external_dependencies (requires internet connection)
+Install external dependencies (requires an internet connection)
 
-must be done debore all other targets only once for a local repository
-all data is stored at ./external-dependencies
-if this command is already runed lately then this is not nesessary future even after clean_full
+This must be done once before running other targets in a local repository
+All data is stored at ./external-dependencies
+If this command has already been run recently,
+it is not necessary to repeat it, even after a full clean.
 
 ```bash
 for f in ./cmake/add_dependencies_scripts/*.sh; do bash "$f"; done
@@ -157,7 +228,7 @@ compilation
 cmake --build build --target all
 ```
 
-run tests
+### Tests
 
 ```bash
 cmake --build build --target test_extended
@@ -172,11 +243,13 @@ ctest --rerun-failed --output-on-failure
 cd ..
 ```
 
-run lint
+### Lint
 
 ```bash
 cmake --build build --target lint
 ```
+
+### Documentation
 
 generate code documentation at ./build/docs/index.html
 
@@ -184,33 +257,34 @@ generate code documentation at ./build/docs/index.html
 cmake --build build --target project_docs
 ```
 
-run a compilled program
+Generate dependency graph
+
+```bash
+# requires to add --graphviz=./build/depends.dot
+# cmake -G Ninja -S . -B build -DCMAKE_BUILD_TYPE=Release --graphviz=./build/depends.dot
+dot -Tpng -o build/depends.png build/depends.dot
+```
+
+### Run
 
 ```bash
 ./build/main
 ```
 
-clean all
+### Clean all
 
 ```bash
 rm -fr ./build
 ```
 
-create a dependency graph at ./build/depends.png
-
-```bash
-cmake -G Ninja -S . -B build -DCMAKE_BUILD_TYPE=Release --graphviz=./build/depends.dot
-dot -Tpng -o build/depends.png build/depends.dot //install graphviz
-```
-
-## debug (vs code)
+### Debug (vs code)
 
 ```bash
 sudo pacman -S extra/gdb
 sudo apt-get install gdb
 ```
 
-## dependencies
+## Dependencies
 
 This project uses pFUnit from NASA Goddard Space Flight Center.
 Source code is available at [pFUnit](https://github.com/Goddard-Fortran-Ecosystem/pFUnit.git).
@@ -221,7 +295,7 @@ Source code is available at [Fortitude](https://github.com/PlasmaFAIR/fortitude.
 This project uses Fortran linter.
 Source code is available at [fortran-linter](https://github.com/cphyc/fortran-linter.git).
 
-This project uses ford for automatic generating code documentation.
+This project uses ford for automatic generation code documentation.
 Source is available at [FORD](https://github.com/Fortran-FOSS-Programmers/ford.git)
 
 This project uses json-fortran for creating and writing json files (recommended for input and out data that is used by fortran programs).
