@@ -45,7 +45,7 @@ cmake_minimum_required(VERSION 3.24)
 if(NOT CMAKE_Fortran_COMPILER)
   find_program(CMAKE_Fortran_COMPILER gfortran)
 endif()
-project(test_fortran LANGUAGES Fortran)
+project(test_fortran LANGUAGES Fortran C)
 
 if(NOT DEFINED CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Release | Debug" FORCE)

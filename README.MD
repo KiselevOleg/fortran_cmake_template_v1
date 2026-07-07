@@ -1,6 +1,7 @@
 # cmake test template
 
-A template project for modern Fortran using CMake and Ninja.
+A template project for modern Fortran using CMake,
+pFUnit, FORD documentation, dependency management.
 It is intended as a starting point for modern Fortran projects.
 
 Features:
@@ -13,43 +14,64 @@ Features:
 
 This project requires and supports only gfortran.
 
+This template assumes you are familiar with:
+
+- Git
+- CMake
+- unit testing
+- lint
+- basic Linux terminal commands
+- fortran 2018+
+
+And tools:
+
+- Ninja compiles the project.
+- pFUnit runs unit tests.
+- FORD generates documentation.
+- Graphviz visualizes project dependencies.
+- JSON files for storing data.
+- HDF5 files for storing data.
+
 ## Structure
 
 ``` text
 .
-├── .github/                     # GitHub Actions / CI
-├── .git/                        # Git metadata
-├── .vscode/                     # VS Code configuration
+├── .github/                      # GitHub Actions / CI
+├── .git/                         # Git metadata
+├── .vscode/                      # VS Code configuration
 │
-├── cmake/                       # CMake modules and scripts
-├── external_dependencies/       # Downloaded external dependencies
+├── cmake/                        # CMake modules and scripts
+├── external_dependencies/        # Downloaded external dependencies
 │
-├── src/                         # Project source code
-│   ├── app/                     # Executable application
-│   └── libs/                    # Reusable library components
+├── src/                          # Project source code
+│   ├── app/                      # Executable application
+│   └── libs/                     # Reusable library components
 │       └── <project_component>/
 │           ├── CMakeLists.txt
-│           ├── include/         # for C interface or facades for large API (not obligatory)
+│           ├── include/          # for C interface or facades for large API (not obligatory)
 │           ├── src/
 │           ├── tests/
-│           └── example/         # (not obligatory)
+│           └── example/          # (not obligatory)
 │
-├── build/                       # Build output (generated)
-│   ├── main                     # Executable
-│   ├── docs/                    # FORD documentation
-│   ├── depends.dot              # Graphviz source
-│   ├── depends.png              # Dependency graph
+├── build/                        # Build output (generated)
+│   ├── main                      # Executable
+│   ├── docs/                     # FORD documentation
+│   ├── depends.dot               # Graphviz source
+│   ├── depends.png               # Dependency graph
+│   ├── include_list_all          # Include files from all project components
+│   ├── include_external_list_all # Include files from all external dependencies
 │   └── src/
 │       └── libs/
 │           └── <project_component>/
 │               ├── <project_component>.a
+│               ├── include/
 │               └── tests/
 │                   └── <test_executable>
 │
-├── CMakeLists.txt               # Top-level build configuration (connects all project components)
-├── ford.md                      # FORD configuration
+├── CMakeLists.txt                # Top-level build configuration (connects all project components)
+├── ford.md                       # FORD configuration
 ├── install_external_dependencies_manually.md
-├── README.md                    # Project documentation
+├── README.md                     # Project documentation
 ├── .gitignore
 ├── .gitattributes
 └── .editorconfig
@@ -161,8 +183,6 @@ python3 --version
 # pacman
 sudo pacman -S python
 python3 --version
-```bash
-
 ```
 
 ![Graphviz](https://img.shields.io/badge/Graphviz-required-9900CC)
@@ -286,17 +306,25 @@ sudo apt-get install gdb
 
 ## Dependencies
 
-This project uses pFUnit from NASA Goddard Space Flight Center.
-Source code is available at [pFUnit](https://github.com/Goddard-Fortran-Ecosystem/pFUnit.git).
+This project uses
 
-This project uses Fortitude.
-Source code is available at [Fortitude](https://github.com/PlasmaFAIR/fortitude.git).
+- pFUnit from NASA Goddard Space Flight Center.
+[pFUnit](https://github.com/Goddard-Fortran-Ecosystem/pFUnit.git).
 
-This project uses Fortran linter.
-Source code is available at [fortran-linter](https://github.com/cphyc/fortran-linter.git).
+- Fortitude.
+[Fortitude](https://github.com/PlasmaFAIR/fortitude.git).
 
-This project uses ford for automatic generation code documentation.
-Source is available at [FORD](https://github.com/Fortran-FOSS-Programmers/ford.git)
+- Fortran linter.
+[fortran-linter](https://github.com/cphyc/fortran-linter.git).
 
-This project uses json-fortran for creating and writing json files (recommended for input and out data that is used by fortran programs).
-Source is available at [jsonfortran](https://github.com/jacobwilliams/json-fortran.git)
+- ford for automatic generation code documentation.
+[FORD](https://github.com/Fortran-FOSS-Programmers/ford.git)
+
+- json-fortran for creating and writing json files
+(recommended for input and out config data that is used by fortran programs).
+[jsonfortran](https://github.com/jacobwilliams/json-fortran.git)
+
+- h5fortran for creating and writing hdf5 files
+(recommended for input and out large data that is used by fortran programs).
+[h5fortran](https://github.com/geospace-code/h5fortran.git)
+and hdf5 that is its dependency [hdf5](https://github.com/HDFGroup/hdf5.git)
