@@ -3,7 +3,6 @@ use static_library_1___math, only:max_new, min_new
 use static_library_1___functions, only:abs_x, neg_x
 use json_module, only:json_file
 use h5fortran, only : hdf5_file
-use hdf5
 use, intrinsic :: iso_fortran_env, only: sp => real32, dp => real64, qp => real128, &
   i1 => int8, i2 => int16, i4 => int32, i8 => int64
 implicit none (type, external)
@@ -109,50 +108,32 @@ implicit none (type, external)
   end block
 
   block
-    integer :: error
-
-    call h5open_f(error)
-    if (error /= 0) stop "HDF5 open failed"
-
-    print *, "HDF5 OK"
-    call h5close_f(error)
-  end block
-  block
-    integer :: ierr
-    integer(HID_T) :: file_id
-
-    call h5open_f(ierr)
-
-    call h5fcreate_f("test.h5", H5F_ACC_TRUNC_F, file_id, ierr)
-
-    print *, "hdf5 ierr=", ierr
-
-    call h5fclose_f(file_id,ierr)
-
-    print *, "2 test passed"
-  end block
-  block
     type(hdf5_file) :: h
 
     real(dp), allocatable :: x(:), y(:)
     integer(i4) :: i
 
     allocate(x(100), y(100))
-    x = [(real(i, dp) * 0.1_dp, i = 1, 100)]
-    y = [(sin(real(i, dp)) * 0.1_dp, i = 1, 100)]
 
-    !call h%open('test.h5', 'rw')
-    call h%open(filename = 'test.h5', action = 'w')
-    call h%write('/t', 123_i4)
+    ! call h%open('test.h5', 'rw')
+    call h%open(filename = "test.h5", action = "w")
+    call h%write("/t", 123_i4)
     print *, "real kind =", kind(x)
     print *, "real size =", storage_size(x(1))
-    call h%write('/x', x)
-    call h%write('/y', y)
+    call h%write("/x", [(real(i, dp) * 0.1_dp, i = 1, 100)])
+    call h%write("/y", [(sin(real(i, dp)) * 0.1_dp, i = 1, 100)])
+    call h%create_group("/particles")
+    call h%create_group("/particles1")
+    call h%write("/particles/x", [(real(i, dp) * 0.1_dp, i = 1, 100)])
+    call h%write("/particles/y", [(sin(real(i, dp)) * 0.1_dp, i = 1, 100)])
+    call h%write("/particles2/x", [(real(i, dp) * 0.1_dp, i = 1, 100)])
+    call h%write("/particles2/y", [(sin(real(i, dp)) * 0.1_dp, i = 1, 100)])
     call h%close()
 
-    call h%open('test.h5', 'r')
-    call h%read('/x', x)
-    call h%read('/y', y)
+    call h%open("test.h5", "r")
+    print *, h%exist("/x")
+    call h%read("/x", x)
+    call h%read("/y", y)
     call h%close()
 
     print *, x(1:5)
