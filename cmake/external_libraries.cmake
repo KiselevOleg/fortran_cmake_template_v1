@@ -26,64 +26,83 @@ file(COPY "${CMAKE_SOURCE_DIR}/external_dependencies/json-fortran/build/include/
 # ==========================================================
 # H5FORTRAN
 # ==========================================================
-add_library(hdf5 STATIC IMPORTED)
-set_target_properties(hdf5 PROPERTIES
-    IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/lib/libhdf5.a"
-    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/mod/static"
-    INTERFACE_LINK_LIBRARIES "ZLIB::ZLIB;dl;m"
+# add_library(hdf5 STATIC IMPORTED)
+# set_target_properties(hdf5 PROPERTIES
+#     IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/lib/libhdf5.a"
+#     INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/mod/static"
+#     INTERFACE_LINK_LIBRARIES "ZLIB::ZLIB;dl;m"
+# )
+# add_library(hdf5_fortran STATIC IMPORTED)
+# set_target_properties(hdf5_fortran PROPERTIES
+#     IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/lib/libhdf5_fortran.a"
+#     INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/mod/static"
+#     INTERFACE_LINK_LIBRARIES "ZLIB::ZLIB;dl;m"
+# )
+# add_library(hdf5_hl STATIC IMPORTED)
+# set_target_properties(hdf5_hl PROPERTIES
+#     IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/lib/libhdf5_hl.a"
+#     INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/mod/static"
+#     INTERFACE_LINK_LIBRARIES "ZLIB::ZLIB;dl;m"
+# )
+# add_library(hdf5_hl_fortran STATIC IMPORTED)
+# set_target_properties(hdf5_hl_fortran PROPERTIES
+#     IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/lib/libhdf5_hl_fortran.a"
+#     INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/mod/static"
+#     INTERFACE_LINK_LIBRARIES "ZLIB::ZLIB;dl;m"
+# )
+# add_library(hdf5_f90cstub STATIC IMPORTED)
+# set_target_properties(hdf5_f90cstub PROPERTIES
+#     IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/lib/libhdf5_f90cstub.a"
+#     INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/mod/static"
+#     INTERFACE_LINK_LIBRARIES "ZLIB::ZLIB;dl;m"
+# )
+# add_library(hdf5_hl_f90cstub STATIC IMPORTED)
+# set_target_properties(hdf5_hl_f90cstub PROPERTIES
+#     IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/lib/libhdf5_hl_f90cstub.a"
+#     INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/mod/static"
+#     INTERFACE_LINK_LIBRARIES "ZLIB::ZLIB;dl;m"
+# )
+# file(COPY "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/mod/static/"
+#     DESTINATION "${ALL_EXTERNAL_INCLUDE_DIR}")
+
+# find_package(Threads REQUIRED)
+# find_package(ZLIB REQUIRED)
+# add_library(h5fortran STATIC IMPORTED)
+# set_target_properties(h5fortran PROPERTIES
+#     IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/external_dependencies/h5fortran/build/libh5fortran.a"
+#     INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/external_dependencies/h5fortran/build/include"
+#     INTERFACE_LINK_LIBRARIES "hdf5_hl_fortran;hdf5_hl;hdf5_fortran;hdf5;hdf5_f90cstub;hdf5_hl_f90cstub;ZLIB::ZLIB;Threads::Threads;dl;m"
+# )
+# file(COPY "${CMAKE_SOURCE_DIR}/external_dependencies/h5fortran/build/include/"
+#     DESTINATION "${ALL_EXTERNAL_INCLUDE_DIR}")
+
+# ==========================================================
+# H5FORTRAN
+# ==========================================================
+list(APPEND CMAKE_PREFIX_PATH
+    "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install"
 )
-add_library(hdf5_fortran STATIC IMPORTED)
-set_target_properties(hdf5_fortran PROPERTIES
-    IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/lib/libhdf5_fortran.a"
-    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/mod/static"
-    INTERFACE_LINK_LIBRARIES "ZLIB::ZLIB;dl;m"
-)
-add_library(hdf5_hl STATIC IMPORTED)
-set_target_properties(hdf5_hl PROPERTIES
-    IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/lib/libhdf5_hl.a"
-    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/mod/static"
-    INTERFACE_LINK_LIBRARIES "ZLIB::ZLIB;dl;m"
-)
-add_library(hdf5_hl_fortran STATIC IMPORTED)
-set_target_properties(hdf5_hl_fortran PROPERTIES
-    IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/lib/libhdf5_hl_fortran.a"
-    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/mod/static"
-    INTERFACE_LINK_LIBRARIES "ZLIB::ZLIB;dl;m"
-)
-add_library(hdf5_f90cstub STATIC IMPORTED)
-set_target_properties(hdf5_f90cstub PROPERTIES
-    IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/lib/libhdf5_f90cstub.a"
-    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/mod/static"
-    INTERFACE_LINK_LIBRARIES "ZLIB::ZLIB;dl;m"
-)
-add_library(hdf5_hl_f90cstub STATIC IMPORTED)
-set_target_properties(hdf5_hl_f90cstub PROPERTIES
-    IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/lib/libhdf5_hl_f90cstub.a"
-    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/mod/static"
-    INTERFACE_LINK_LIBRARIES "ZLIB::ZLIB;dl;m"
-)
-file(COPY "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/mod/static/"
-    DESTINATION "${ALL_EXTERNAL_INCLUDE_DIR}")
 
 find_package(Threads REQUIRED)
 find_package(ZLIB REQUIRED)
-add_library(h5fortran STATIC IMPORTED)
-set_target_properties(h5fortran PROPERTIES
-    IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/external_dependencies/h5fortran/build/libh5fortran.a"
-    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/external_dependencies/h5fortran/build/include"
-    INTERFACE_LINK_LIBRARIES "hdf5_hl_fortran;hdf5_hl;hdf5_fortran;hdf5;hdf5_f90cstub;hdf5_hl_f90cstub;ZLIB::ZLIB;Threads::Threads;dl;m"
-)
-file(COPY "${CMAKE_SOURCE_DIR}/external_dependencies/h5fortran/build/include/"
-    DESTINATION "${ALL_EXTERNAL_INCLUDE_DIR}")
 
-# list(APPEND CMAKE_PREFIX_PATH
-#     "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install"
-# )
-# find_package(HDF5 REQUIRED COMPONENTS Fortran HL)
-# add_library(h5fortran STATIC IMPORTED)
-# set_target_properties(h5fortran PROPERTIES
-#     IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/external_dependencies/h5fortran/build/install/lib/libh5fortran.a"
-#     INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/external_dependencies/h5fortran/build/install/include"
-#     INTERFACE_LINK_LIBRARIES
-#     "hdf5::hdf5_hl_fortran;hdf5::hdf5_fortran"
-# )
+find_package(HDF5 CONFIG REQUIRED COMPONENTS Fortran HL)
+
+add_library(h5fortran STATIC IMPORTED GLOBAL)
+set_target_properties(h5fortran PROPERTIES
+    IMPORTED_LOCATION
+        "${CMAKE_SOURCE_DIR}/external_dependencies/h5fortran/build/libh5fortran.a"
+    INTERFACE_INCLUDE_DIRECTORIES
+        "${CMAKE_SOURCE_DIR}/external_dependencies/h5fortran/build/include"
+    INTERFACE_LINK_LIBRARIES
+        "h5fortran;hdf5_hl_fortran-static"
+)
+
+file(COPY
+    "${CMAKE_SOURCE_DIR}/external_dependencies/hdf5/build/install/mod/static/"
+    DESTINATION "${ALL_EXTERNAL_INCLUDE_DIR}"
+)
+file(COPY
+    "${CMAKE_SOURCE_DIR}/external_dependencies/h5fortran/build/include/"
+    DESTINATION "${ALL_EXTERNAL_INCLUDE_DIR}"
+)
