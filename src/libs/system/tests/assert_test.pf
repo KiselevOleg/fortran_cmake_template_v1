@@ -52,6 +52,17 @@ contains
   @test
   subroutine equals_test_common()
   implicit none (type, external)
+    call assertEqual(.true., equals(1.0_sp, 1.0_sp, 1e-6_sp))
+    call assertEqual(.true., equals(1.0_sp, 1.000011_sp, 1e-3_sp))
+    call assertEqual(.true., equals(1.0_sp, 1.000011_sp, 1e-4_sp))
+    call assertEqual(.false., equals(1.0_sp, 1.000011_sp, 1e-5_sp))
+
+    call assertEqual(.true., equals((1.0_sp, 1.0_sp), (1.0_sp, 1.0_sp), 1e-6_sp))
+    call assertEqual(.true., equals((1.0_sp, 1.0_sp), (1.000011_sp, 1.0_sp), 1e-3_sp))
+    call assertEqual(.true., equals((1.0_sp, 1.0_sp), (1.000011_sp, 1.0_sp), 1e-4_sp))
+    call assertEqual(.false., equals((1.0_sp, 1.0_sp), (1.000011_sp, 1.0_sp), 1e-5_sp))
+    call assertEqual(.false., equals((1.0_sp, 1.0_sp), (1.0_sp, 0.0_sp), 1e-5_sp))
+
     call assertEqual(.true., equals(1d0, 1d0, 1d-9))
     call assertEqual(.true., equals(1d0, 1.000011d0, 1d-3))
     call assertEqual(.true., equals(1d0, 1.000011d0, 1d-4))
@@ -62,6 +73,17 @@ contains
     call assertEqual(.true., equals((1d0, 1d0), (1.000011d0, 1d0), 1d-4))
     call assertEqual(.false., equals((1d0, 1d0), (1.000011d0, 1d0), 1d-5))
     call assertEqual(.false., equals((1d0, 1d0), (1d0, 0d0), 1d-5))
+
+    call assertEqual(.true., equals(1.0_qp, 1.0_qp, 1e-9_qp))
+    call assertEqual(.true., equals(1.0_qp, 1.000011_qp, 1e-3_qp))
+    call assertEqual(.true., equals(1.0_qp, 1.000011_qp, 1e-4_qp))
+    call assertEqual(.false., equals(1.0_qp, 1.000011_qp, 1e-5_qp))
+
+    call assertEqual(.true., equals((1.0_qp, 1.0_qp), (1.0_qp, 1.0_qp), 1e-9_qp))
+    call assertEqual(.true., equals((1.0_qp, 1.0_qp), (1.000011_qp, 1.0_qp), 1e-3_qp))
+    call assertEqual(.true., equals((1.0_qp, 1.0_qp), (1.000011_qp, 1.0_qp), 1e-4_qp))
+    call assertEqual(.false., equals((1.0_qp, 1.0_qp), (1.000011_qp, 1.0_qp), 1e-5_qp))
+    call assertEqual(.false., equals((1.0_qp, 1.0_qp), (1.0_qp, 0.0_qp), 1e-5_qp))
   end subroutine equals_test_common
 
 

@@ -22,8 +22,12 @@ private
   !>     condition = equals_real64(a, b, 1d-7) )
   !> ```
   interface equals
+    module procedure equals_real32
+    module procedure equals_complex32
     module procedure equals_real64
     module procedure equals_complex64
+    module procedure equals_real128
+    module procedure equals_complex128
   end interface
 
   interface
@@ -111,15 +115,31 @@ private
     !> call warning_assert_not( &
     !>     location = "math.divide", &
     !>     message  = "a must be not equal to b", &
-    !>     condition = equals_real64(a, b, 1d-7) )
+    !>     condition = equals_real32(a, b, 1s-7) )
     !> ```
-    pure elemental logical module function equals_real64(a, b, eps) result(res)
+    pure elemental logical module function equals_real32(a, b, eps) result(res)
     implicit none (type, external)
-      real(dp), intent(in) :: a
-      real(dp), intent(in) :: b
+      real(sp), intent(in) :: a
+      real(sp), intent(in) :: b
       !> absolute accuration
-      real(dp), intent(in) :: eps
-    end function equals_real64
+      real(sp), intent(in) :: eps
+    end function equals_real32
+    !> check if numbers are equal with given accuration
+    !>
+    !> @example
+    !> ```fortran
+    !> call warning_assert_not( &
+    !>     location = "math.divide", &
+    !>     message  = "a must be not equal to b", &
+    !>     condition = equals_complex32(a, b, 1s-7) )
+    !> ```
+    pure elemental logical module function equals_complex32(a, b, eps) result(res)
+    implicit none (type, external)
+      complex(sp), intent(in) :: a
+      complex(sp), intent(in) :: b
+      !> absolute accuration
+      real(sp), intent(in) :: eps
+    end function equals_complex32
 
     !> check if numbers are equal with given accuration
     !>
@@ -130,6 +150,22 @@ private
     !>     message  = "a must be not equal to b", &
     !>     condition = equals_real64(a, b, 1d-7) )
     !> ```
+    pure elemental logical module function equals_real64(a, b, eps) result(res)
+    implicit none (type, external)
+      real(dp), intent(in) :: a
+      real(dp), intent(in) :: b
+      !> absolute accuration
+      real(dp), intent(in) :: eps
+    end function equals_real64
+    !> check if numbers are equal with given accuration
+    !>
+    !> @example
+    !> ```fortran
+    !> call warning_assert_not( &
+    !>     location = "math.divide", &
+    !>     message  = "a must be not equal to b", &
+    !>     condition = equals_complex64(a, b, 1d-7) )
+    !> ```
     pure elemental logical module function equals_complex64(a, b, eps) result(res)
     implicit none (type, external)
       complex(dp), intent(in) :: a
@@ -137,5 +173,38 @@ private
       !> absolute accuration
       real(dp), intent(in) :: eps
     end function equals_complex64
+
+    !> check if numbers are equal with given accuration
+    !>
+    !> @example
+    !> ```fortran
+    !> call warning_assert_not( &
+    !>     location = "math.divide", &
+    !>     message  = "a must be not equal to b", &
+    !>     condition = equals_real128(a, b, 1q-7) )
+    !> ```
+    pure elemental logical module function equals_real128(a, b, eps) result(res)
+    implicit none (type, external)
+      real(qp), intent(in) :: a
+      real(qp), intent(in) :: b
+      !> absolute accuration
+      real(qp), intent(in) :: eps
+    end function equals_real128
+    !> check if numbers are equal with given accuration
+    !>
+    !> @example
+    !> ```fortran
+    !> call warning_assert_not( &
+    !>     location = "math.divide", &
+    !>     message  = "a must be not equal to b", &
+    !>     condition = equals_complex128(a, b, 1q-7) )
+    !> ```
+    pure elemental logical module function equals_complex128(a, b, eps) result(res)
+    implicit none (type, external)
+      complex(qp), intent(in) :: a
+      complex(qp), intent(in) :: b
+      !> absolute accuration
+      real(qp), intent(in) :: eps
+    end function equals_complex128
   end interface
 end module assert
