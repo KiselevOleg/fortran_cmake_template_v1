@@ -8,15 +8,15 @@ implicit none (type, external)
 private
   character(len = *), parameter :: module_name = "system___assert"
 
-  public :: error_assert, error_not_assert
-  public :: warning_assert, warning_not_assert
+  public :: error_assert, error_assert_not
+  public :: warning_assert, warning_assert_not
   public :: equals
 
   !> check if numbers are equal with given accuration
   !>
   !> @example
   !> ```fortran
-  !> call warning_not_assert( &
+  !> call warning_assert_not( &
   !>     location = "math.divide", &
   !>     message  = "a must be not equal to b", &
   !>     condition = equals_real64(a, b, 1d-7) )
@@ -49,12 +49,12 @@ private
     !>
     !> @example
     !> ```fortran
-    !> call error_not_assert( &
+    !> call error_assert_not( &
     !>     location = "math.divide", &
     !>     message  = "b must be >=1d0", &
     !>     condition = b < 1d0 )
     !> ```
-    pure elemental module subroutine error_not_assert(location, message, condition)
+    pure elemental module subroutine error_assert_not(location, message, condition)
     implicit none (type, external)
       !> location where validation happens (recomended "module_name.procedure_name")
       character(len = *), intent (in) :: location
@@ -62,7 +62,7 @@ private
       character(len = *), intent (in) :: message
       !> condition satisfaction value
       logical, intent (in) :: condition
-    end subroutine error_not_assert
+    end subroutine error_assert_not
 
 
     !> check if condition is satisfied (else throws an exception)
@@ -87,12 +87,12 @@ private
     !>
     !> @example
     !> ```fortran
-    !> call warning_not_assert( &
+    !> call warning_assert_not( &
     !>     location = "math.divide", &
     !>     message  = "b should be >=1d0", &
     !>     condition = b < 1d0 )
     !> ```
-    module subroutine warning_not_assert(location, message, condition)
+    module subroutine warning_assert_not(location, message, condition)
     implicit none (type, external)
       !> location where validation happens (recomended "module_name.procedure_name")
       character(len = *), intent (in) :: location
@@ -100,7 +100,7 @@ private
       character(len = *), intent (in) :: message
       !> condition satisfaction value
       logical, intent (in) :: condition
-    end subroutine warning_not_assert
+    end subroutine warning_assert_not
   end interface
 
   interface
@@ -108,7 +108,7 @@ private
     !>
     !> @example
     !> ```fortran
-    !> call warning_not_assert( &
+    !> call warning_assert_not( &
     !>     location = "math.divide", &
     !>     message  = "a must be not equal to b", &
     !>     condition = equals_real64(a, b, 1d-7) )
@@ -125,7 +125,7 @@ private
     !>
     !> @example
     !> ```fortran
-    !> call warning_not_assert( &
+    !> call warning_assert_not( &
     !>     location = "math.divide", &
     !>     message  = "a must be not equal to b", &
     !>     condition = equals_real64(a, b, 1d-7) )

@@ -1,13 +1,13 @@
 submodule(integration_path_part_line) integration_path_part_line_impl
-use system___assert, only: error_assert, error_not_assert, &
-  warning_assert, warning_not_assert, &
+use system___assert, only: error_assert, error_assert_not, &
+  warning_assert, warning_assert_not, &
   equals
 implicit none (type, external)
 
   contains
 
   module procedure integration_path_part_line_constructor
-    call error_not_assert(location = module_name // &
+    call error_assert_not(location = module_name // &
       ".constructor", &
       message = "a start and an end points must be different", &
       condition = equals(start, end, 1d-7) &

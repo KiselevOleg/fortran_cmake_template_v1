@@ -1,6 +1,6 @@
 submodule(integrator) integrator_builder_impl
-use system___assert, only: error_assert, error_not_assert, &
-  warning_assert, warning_not_assert, &
+use system___assert, only: error_assert, error_assert_not, &
+  warning_assert, warning_assert_not, &
   equals
 use, intrinsic :: ieee_arithmetic, only: ieee_value, ieee_quiet_nan, ieee_signaling_nan, &
   ieee_is_nan
@@ -74,7 +74,7 @@ implicit none (type, external)
     end associate
   end procedure add_new_path_part
   module procedure part_integration_strategy
-    call error_not_assert(location = module_name // &
+    call error_assert_not(location = module_name // &
       ".part_integration_strategy", &
       message = "path part size == 0", &
       condition = this%path_part_size == 0 &
@@ -87,7 +87,7 @@ implicit none (type, external)
   end procedure part_integration_strategy
 
   module procedure last_start_previous
-    call error_not_assert(location = module_name // &
+    call error_assert_not(location = module_name // &
       ".last_start_previous", &
       message = "path part size == 0", &
       condition = this%path_part_size == 0 &
@@ -99,7 +99,7 @@ implicit none (type, external)
     res = value
   end procedure last_start_new
   module procedure last_end_previous
-    call error_not_assert(location = module_name // &
+    call error_assert_not(location = module_name // &
       ".last_end_previous", &
       message = "path part size == 0", &
       condition = this%path_part_size == 0 &
@@ -116,7 +116,7 @@ implicit none (type, external)
   end procedure set_boundary_points
 
   module procedure set_min_abs_point_difference_between_boundary_points
-    call error_not_assert(location = module_name // &
+    call error_assert_not(location = module_name // &
       ".set_min_abs_point_difference_between_boundary_points", &
       message = "path part size == 0", &
       condition = this%path_part_size == 0 &
@@ -153,7 +153,7 @@ implicit none (type, external)
           i = 1, this%path_part_size &
         )] &
     )
-      call error_not_assert(location = module_name // &
+      call error_assert_not(location = module_name // &
         ".check_correct", &
         message = "path part size == 0", &
         condition = part_size == 0 &
@@ -190,7 +190,7 @@ implicit none (type, external)
           condition = allocated(this%part(i)%integrate_element) &
         )
 
-        call error_not_assert(location = module_name // &
+        call error_assert_not(location = module_name // &
           ".check_correct", &
           message = "at least 1 integrate path part has too close boundary points", &
           condition = equals (start_point(i), end_point(i), min_abs_point_difference(i)) &

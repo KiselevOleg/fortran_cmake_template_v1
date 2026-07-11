@@ -1,7 +1,7 @@
 @test
 module assert_test
-use system___assert, only: error_assert, error_not_assert, &
-  warning_assert, warning_not_assert, &
+use system___assert, only: error_assert, error_assert_not, &
+  warning_assert, warning_assert_not, &
   equals
 use PFUnit, only: &
   assertEqual, & ! assertEqual(expected, actual, [tolerance], [message])
@@ -19,35 +19,35 @@ contains
   @test
   subroutine error_assert_test_common()
   implicit none (type, external)
-    call error_assert(location = module_name // ".error_not_assert_test_common", &
+    call error_assert(location = module_name // ".error_assert_not_test_common", &
       message = "error_assert has thrown an exception incorrectly", &
       condition = 1_i1 == 0_i1 + 1_i1 &
     )
-    call error_assert(location = module_name // ".error_not_assert_test_common", &
+    call error_assert(location = module_name // ".error_assert_not_test_common", &
       message = "error_assert has thrown an exception incorrectly", &
       condition = 1_i1 > 0_i1 &
     )
-    call error_assert(location = module_name // ".error_not_assert_test_common", &
+    call error_assert(location = module_name // ".error_assert_not_test_common", &
       message = "error_assert has thrown an exception incorrectly", &
       condition = .true. &
     )
   end subroutine error_assert_test_common
   @test
-  subroutine error_not_assert_test_common()
+  subroutine error_assert_not_test_common()
   implicit none (type, external)
-    call error_not_assert(location = module_name // ".error_not_assert_test_common", &
+    call error_assert_not(location = module_name // ".error_assert_not_test_common", &
       message = "error_assert has thrown an exception incorrectly", &
       condition = 1_i1 /= 0_i1 + 1_i1 &
     )
-    call error_not_assert(location = module_name // ".error_not_assert_test_common", &
+    call error_assert_not(location = module_name // ".error_assert_not_test_common", &
       message = "error_assert has thrown an exception incorrectly", &
       condition = 1_i1 == 0_i1 &
     )
-    call error_not_assert(location = module_name // ".error_not_assert_test_common", &
+    call error_assert_not(location = module_name // ".error_assert_not_test_common", &
       message = "error_assert has thrown an exception incorrectly", &
       condition = .false. &
     )
-  end subroutine error_not_assert_test_common
+  end subroutine error_assert_not_test_common
 
   @test
   subroutine equals_test_common()

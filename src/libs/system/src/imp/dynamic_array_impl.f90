@@ -1,6 +1,6 @@
 submodule(dynamic_array) dynamic_array_impl
-use assert, only: error_assert, error_not_assert, &
-  warning_assert, warning_not_assert
+use assert, only: error_assert, error_assert_not, &
+  warning_assert, warning_assert_not
 implicit none (type, external)
 
   contains
@@ -35,7 +35,7 @@ implicit none (type, external)
     end associate
   end procedure add_last_real64
   module procedure delete_last_real64
-    call error_not_assert(location = module_name // ".delete_last_real64", &
+    call error_assert_not(location = module_name // ".delete_last_real64", &
       message = "size == 0", &
       condition = this%data_size == 0 &
     )
@@ -126,7 +126,7 @@ implicit none (type, external)
     end associate
   end procedure add_last_int32
   module procedure delete_last_int32
-    call error_not_assert(location = module_name // ".delete_last_int32", &
+    call error_assert_not(location = module_name // ".delete_last_int32", &
       message = "size == 0", &
       condition = this%data_size == 0 &
     )
@@ -218,7 +218,7 @@ implicit none (type, external)
     end associate
   end procedure add_last_complex64
   module procedure delete_last_complex64
-    call error_not_assert(location = module_name // ".delete_last_complex64", &
+    call error_assert_not(location = module_name // ".delete_last_complex64", &
       message = "size == 0", &
       condition = this%data_size == 0 &
     )

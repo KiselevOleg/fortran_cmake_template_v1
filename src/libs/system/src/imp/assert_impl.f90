@@ -7,19 +7,19 @@ implicit none (type, external)
     if (condition) return
     error stop "error error_assert " // location // " : " // message
   end procedure error_assert
-  module procedure error_not_assert
+  module procedure error_assert_not
     if (.not. condition) return
-    error stop "error error_not_assert " // location // " : " // message
-  end procedure error_not_assert
+    error stop "error error_assert_not " // location // " : " // message
+  end procedure error_assert_not
 
   module procedure warning_assert
     if (condition) return
     error stop "warning " // location // " : " // message
   end procedure warning_assert
-  module procedure warning_not_assert
+  module procedure warning_assert_not
     if (.not. condition) return
     error stop "warning " // location // " : " // message
-  end procedure warning_not_assert
+  end procedure warning_assert_not
 
   module procedure equals_real64
     call error_assert(location = module_name // ".equals_real64", &
