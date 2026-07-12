@@ -20,7 +20,7 @@ private
   type, abstract :: integration_element_obj
   private
   contains
-    procedure(run_type), deferred, pass :: run
+    procedure(run_type), deferred, pass(this) :: run
   end type integration_element_obj
 
   abstract interface

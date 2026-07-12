@@ -23,16 +23,16 @@ file(COPY "${ORIGINAL_LIB_DIR}" DESTINATION "${COPY_SRC_DIR}")
 
 file(GLOB NAMESPACED_SUBFOLDERS LIST_DIRECTORIES true "${NAMESPACED_SRC_DIR}/*")
 foreach(SUBFOLDER ${NAMESPACED_SUBFOLDERS})
-    if(IS_DIRECTORY ${SUBFOLDER})
+    if (IS_DIRECTORY ${SUBFOLDER})
         get_filename_component(SUBNAME_DIR ${SUBFOLDER} NAME)
         set(DEST_SUBFOLDER "${COPY_SRC_DIR}/libs/${SUBNAME_DIR}")
 
-        if(EXISTS ${DEST_SUBFOLDER})
+        if (EXISTS ${DEST_SUBFOLDER})
             file(REMOVE_RECURSE "${DEST_SUBFOLDER}")
-        endif()
+        endif ()
 
         file(COPY "${SUBFOLDER}" DESTINATION "${COPY_SRC_DIR}/libs")
-    endif()
+    endif ()
 endforeach()
 
 file(COPY "${ORIGINAL_APP_DIR}" DESTINATION "${COPY_SRC_DIR}")
@@ -49,9 +49,9 @@ execute_process(
     RESULT_VARIABLE FORD_RESULT
 )
 
-if(NOT FORD_RESULT EQUAL 0)
+if (NOT FORD_RESULT EQUAL 0)
     message(FATAL_ERROR "Ford failed with exit code ${FORD_RESULT}")
-endif()
+endif ()
 
 message(STATUS "[project_docs] Moving generated docs to ${DOCS_OUTPUT_DIR}")
 file(REMOVE_RECURSE "${DOCS_OUTPUT_DIR}")

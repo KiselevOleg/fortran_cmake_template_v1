@@ -13,11 +13,11 @@ foreach(file ${SRC_FILES})
   get_filename_component(fname ${file} NAME_WE)
 
   list(FIND MODULE_NAMES "${fname}" INDEX)
-  if(INDEX EQUAL -1)
+  if (INDEX EQUAL -1)
     message(STATUS "generate namespace for ${fname}")
-  else()
+  else ()
     message(FATAL_ERROR "several files with the same name ${fname} at the library ${LIBRARY_NAME}")
-  endif()
+  endif ()
 
   list(APPEND MODULE_NAMES ${fname})
 endforeach()
@@ -61,9 +61,9 @@ endforeach()
 
 
 file(GLOB_RECURSE GENERATED_SRC "${GENERATED_SRC_DIR}/*.f90")
-if(NOT GENERATED_SRC)
+if (NOT GENERATED_SRC)
   message(FATAL_ERROR "No fortran files found in ${GENERATED_SRC_DIR}")
-endif()
+endif ()
 
 add_library(${LIBRARY_NAME} STATIC ${GENERATED_SRC})
 

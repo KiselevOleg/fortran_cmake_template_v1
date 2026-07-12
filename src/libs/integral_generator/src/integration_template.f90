@@ -27,7 +27,7 @@ private
   type, abstract :: integration_template_obj
   private
   contains
-    procedure(run_type), deferred, pass :: run
+    procedure(run_type), deferred, pass(this) :: run
   end type integration_template_obj
 
   abstract interface

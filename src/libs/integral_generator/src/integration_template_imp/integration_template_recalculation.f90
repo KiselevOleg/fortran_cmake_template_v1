@@ -22,7 +22,7 @@ private
     real(dp) :: max_step
     real(dp) :: init_step
   contains
-    procedure, pass :: run => run
+    procedure, pass(this) :: run => run
   end type integration_template_recalculation_obj
 
   interface

@@ -12,7 +12,7 @@ private
   public :: warning_assert, warning_assert_not
   public :: equals
 
-  !> check if numbers are equal with given accuration
+  !> check if numbers are equal with given accuracy
   !>
   !> @example
   !> ```fortran
@@ -42,9 +42,9 @@ private
     !> ```
     pure elemental module subroutine error_assert(location, message, condition)
     implicit none (type, external)
-      !> location where validation happens (recomended "module_name.procedure_name")
+      !> location where validation happens (recommended "module_name.procedure_name")
       character(len = *), intent (in) :: location
-      !> error descruption
+      !> error description
       character(len = *), intent (in) :: message
       !> condition satisfaction value
       logical, intent (in) :: condition
@@ -60,9 +60,9 @@ private
     !> ```
     pure elemental module subroutine error_assert_not(location, message, condition)
     implicit none (type, external)
-      !> location where validation happens (recomended "module_name.procedure_name")
+      !> location where validation happens (recommended "module_name.procedure_name")
       character(len = *), intent (in) :: location
-      !> error descruption
+      !> error description
       character(len = *), intent (in) :: message
       !> condition satisfaction value
       logical, intent (in) :: condition
@@ -80,9 +80,9 @@ private
     !> ```
     module subroutine warning_assert(location, message, condition)
     implicit none (type, external)
-      !> location where validation happens (recomended "module_name.procedure_name")
+      !> location where validation happens (recommended "module_name.procedure_name")
       character(len = *), intent (in) :: location
-      !> warning descruption
+      !> warning description
       character(len = *), intent (in) :: message
       !> condition satisfaction value
       logical, intent (in) :: condition
@@ -98,9 +98,9 @@ private
     !> ```
     module subroutine warning_assert_not(location, message, condition)
     implicit none (type, external)
-      !> location where validation happens (recomended "module_name.procedure_name")
+      !> location where validation happens (recommended "module_name.procedure_name")
       character(len = *), intent (in) :: location
-      !> warning descruption
+      !> warning description
       character(len = *), intent (in) :: message
       !> condition satisfaction value
       logical, intent (in) :: condition
@@ -108,7 +108,7 @@ private
   end interface
 
   interface
-    !> check if numbers are equal with given accuration
+    !> check if numbers are equal with given accuracy
     !>
     !> @example
     !> ```fortran
@@ -121,10 +121,10 @@ private
     implicit none (type, external)
       real(sp), intent(in) :: a
       real(sp), intent(in) :: b
-      !> absolute accuration
+      !> absolute accuracy
       real(sp), intent(in) :: eps
     end function equals_real32
-    !> check if numbers are equal with given accuration
+    !> check if numbers are equal with given accuracy
     !>
     !> @example
     !> ```fortran
@@ -137,11 +137,11 @@ private
     implicit none (type, external)
       complex(sp), intent(in) :: a
       complex(sp), intent(in) :: b
-      !> absolute accuration
+      !> absolute accuracy
       real(sp), intent(in) :: eps
     end function equals_complex32
 
-    !> check if numbers are equal with given accuration
+    !> check if numbers are equal with given accuracy
     !>
     !> @example
     !> ```fortran
@@ -154,10 +154,10 @@ private
     implicit none (type, external)
       real(dp), intent(in) :: a
       real(dp), intent(in) :: b
-      !> absolute accuration
+      !> absolute accuracy
       real(dp), intent(in) :: eps
     end function equals_real64
-    !> check if numbers are equal with given accuration
+    !> check if numbers are equal with given accuracy
     !>
     !> @example
     !> ```fortran
@@ -170,11 +170,11 @@ private
     implicit none (type, external)
       complex(dp), intent(in) :: a
       complex(dp), intent(in) :: b
-      !> absolute accuration
+      !> absolute accuracy
       real(dp), intent(in) :: eps
     end function equals_complex64
 
-    !> check if numbers are equal with given accuration
+    !> check if numbers are equal with given accuracy
     !>
     !> @example
     !> ```fortran
@@ -187,10 +187,10 @@ private
     implicit none (type, external)
       real(qp), intent(in) :: a
       real(qp), intent(in) :: b
-      !> absolute accuration
+      !> absolute accuracy
       real(qp), intent(in) :: eps
     end function equals_real128
-    !> check if numbers are equal with given accuration
+    !> check if numbers are equal with given accuracy
     !>
     !> @example
     !> ```fortran
@@ -203,7 +203,7 @@ private
     implicit none (type, external)
       complex(qp), intent(in) :: a
       complex(qp), intent(in) :: b
-      !> absolute accuration
+      !> absolute accuracy
       real(qp), intent(in) :: eps
     end function equals_complex128
   end interface

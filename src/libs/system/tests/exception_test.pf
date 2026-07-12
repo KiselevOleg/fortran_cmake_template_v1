@@ -1,0 +1,624 @@
+@test
+module exception_test
+use system___exception, only: exception_type, assignment(=), &
+  EXCEPTION_KIND_TYPE_ERROR, EXCEPTION_KIND_TYPE_WARNING, EXCEPTION_KIND_TYPE_INFO, print_exception
+use PFUnit, only: &
+  assertEqual, & ! assertEqual(expected, actual, [tolerance], [message])
+  assertNotEqual, & ! assertNotEqual(expected, actual, [tolerance], [message])
+  assertTrue ! assertTrue(condition, [message])
+use, intrinsic :: iso_fortran_env, only: sp => real32, dp => real64, qp => real128, &
+  i1 => int8, i2 => int16, i4 => int32, i8 => int64
+implicit none (type, external)
+public
+
+  character(len = *), parameter :: module_name = "system___exception_test"
+
+contains
+
+  @test
+  subroutine exception_type_test_standart_usage()
+  implicit none (type, external)
+    type(exception_type) :: error
+
+    call error%init()
+
+    call assertEqual(error%has_thrown(), .false.)
+
+    call error%throw( &
+      where = "exception_test_common", &
+      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+      message = "test error", &
+      code = 1004_i4 &
+    )
+    call assertEqual(error%has_thrown(), .true.)
+    call assertEqual(error%get_where(), "exception_test_common")
+    call assertEqual(error%get_kind_type(), EXCEPTION_KIND_TYPE_ERROR)
+    call assertEqual(error%get_message(), "test error")
+    call assertEqual(error%has_code(), .true.)
+    call assertEqual(error%get_code(), 1004_i4)
+    call assertEqual(error%has_cause(), .false.)
+
+    call error%clear()
+    call assertEqual(error%has_thrown(), .false.)
+
+    call error%throw( &
+      where = "exception_test_common", &
+      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+      message = "test error", &
+      code = 1004_i4)
+    call assertEqual(error%has_thrown(), .true.)
+    call assertEqual(error%get_where(), "exception_test_common")
+    call assertEqual(error%get_kind_type(), EXCEPTION_KIND_TYPE_ERROR)
+    call assertEqual(error%get_message(), "test error")
+    call assertEqual(error%has_code(), .true.)
+    call assertEqual(error%get_code(), 1004_i4)
+    call assertEqual(error%has_cause(), .false.)
+
+    call error%throw( &
+      where = "exception_test_common inner", &
+      kind_type = EXCEPTION_KIND_TYPE_WARNING, &
+      message = "test error new")
+    call assertEqual(error%has_thrown(), .true.)
+    call assertEqual(error%get_where(), "exception_test_common")
+    call assertEqual(error%get_kind_type(), EXCEPTION_KIND_TYPE_ERROR)
+    call assertEqual(error%get_message(), "test error")
+    call assertEqual(error%has_code(), .true.)
+    call assertEqual(error%get_code(), 1004_i4)
+    call assertEqual(error%has_cause(), .true.)
+    block
+      type(exception_type) :: t
+
+      t = error%get_cause()
+
+      call assertEqual(t%has_thrown(), .true.)
+      call assertEqual(t%get_where(), "exception_test_common inner")
+      call assertEqual(t%get_kind_type(), EXCEPTION_KIND_TYPE_WARNING)
+      call assertEqual(t%get_message(), "test error new")
+      call assertEqual(t%has_code(), .false.)
+      call assertEqual(t%has_cause(), .false.)
+    end block
+
+    call error%throw( &
+      where = "exception_test_common inner new", &
+      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+      message = "test error new new", &
+      code = 3001_i4 &
+    )
+    call assertEqual(error%has_thrown(), .true.)
+    call assertEqual(error%get_where(), "exception_test_common")
+    call assertEqual(error%get_kind_type(), EXCEPTION_KIND_TYPE_ERROR)
+    call assertEqual(error%get_message(), "test error")
+    call assertEqual(error%has_code(), .true.)
+    call assertEqual(error%get_code(), 1004_i4)
+    call assertEqual(error%has_cause(), .true.)
+    block
+      type(exception_type) :: t
+
+      t = error%get_cause()
+
+      call assertEqual(t%has_thrown(), .true.)
+      call assertEqual(t%get_where(), "exception_test_common inner")
+      call assertEqual(t%get_kind_type(), EXCEPTION_KIND_TYPE_WARNING)
+      call assertEqual(t%get_message(), "test error new")
+      call assertEqual(t%has_code(), .false.)
+      call assertEqual(t%has_cause(), .true.)
+
+      t = t%get_cause()
+
+      call assertEqual(t%has_thrown(), .true.)
+      call assertEqual(t%get_where(), "exception_test_common inner new")
+      call assertEqual(t%get_kind_type(), EXCEPTION_KIND_TYPE_ERROR)
+      call assertEqual(t%get_message(), "test error new new")
+      call assertEqual(t%has_code(), .true.)
+      call assertEqual(t%get_code(), 3001_i4)
+      call assertEqual(t%has_cause(), .false.)
+    end block
+
+    call error%throw( &
+      where = "exception_test_common outer", &
+      kind_type = EXCEPTION_KIND_TYPE_INFO, &
+      message = "end error", &
+      code = 1_i4 &
+    )
+    call assertEqual(error%has_thrown(), .true.)
+    call assertEqual(error%get_where(), "exception_test_common")
+    call assertEqual(error%get_kind_type(), EXCEPTION_KIND_TYPE_ERROR)
+    call assertEqual(error%get_message(), "test error")
+    call assertEqual(error%has_code(), .true.)
+    call assertEqual(error%get_code(), 1004_i4)
+    call assertEqual(error%has_cause(), .true.)
+    block
+      type(exception_type) :: t
+
+      t = error%get_cause()
+
+      call assertEqual(t%has_thrown(), .true.)
+      call assertEqual(t%get_where(), "exception_test_common inner")
+      call assertEqual(t%get_kind_type(), EXCEPTION_KIND_TYPE_WARNING)
+      call assertEqual(t%get_message(), "test error new")
+      call assertEqual(t%has_code(), .false.)
+      call assertEqual(t%has_cause(), .true.)
+
+      t = t%get_cause()
+
+      call assertEqual(t%has_thrown(), .true.)
+      call assertEqual(t%get_where(), "exception_test_common inner new")
+      call assertEqual(t%get_kind_type(), EXCEPTION_KIND_TYPE_ERROR)
+      call assertEqual(t%get_message(), "test error new new")
+      call assertEqual(t%has_code(), .true.)
+      call assertEqual(t%get_code(), 3001_i4)
+      call assertEqual(t%has_cause(), .true.)
+
+      t = t%get_cause()
+
+      call assertEqual(t%has_thrown(), .true.)
+      call assertEqual(t%get_where(), "exception_test_common outer")
+      call assertEqual(t%get_kind_type(), EXCEPTION_KIND_TYPE_INFO)
+      call assertEqual(t%get_message(), "end error")
+      call assertEqual(t%has_code(), .true.)
+      call assertEqual(t%get_code(), 1_i4)
+      call assertEqual(t%has_cause(), .false.)
+    end block
+  end subroutine exception_type_test_standart_usage
+
+  @test
+  subroutine exception_type_thrown_if_and_thrown_if_not_test_common()
+  implicit none (type, external)
+    type(exception_type) :: error
+
+    call error%init()
+
+    call error%throw_if ( &
+      where = "exception_test_common", &
+      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+      message = "test error", &
+      code = 1004_i4, &
+      condition = .false. &
+    )
+    call assertEqual(error%has_thrown(), .false.)
+
+    call error%throw_if ( &
+      where = "exception_test_common", &
+      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+      message = "test error", &
+      code = 1004_i4, &
+      condition = .true. &
+    )
+    call assertEqual(error%has_thrown(), .true.)
+    call assertEqual(error%get_where(), "exception_test_common")
+    call assertEqual(error%get_kind_type(), EXCEPTION_KIND_TYPE_ERROR)
+    call assertEqual(error%get_message(), "test error")
+    call assertEqual(error%has_code(), .true.)
+    call assertEqual(error%get_code(), 1004_i4)
+    call assertEqual(error%has_cause(), .false.)
+
+    call error%clear()
+
+    call error%throw_if_not ( &
+      where = "exception_test_common", &
+      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+      message = "test error", &
+      code = 1004_i4, &
+      condition = .true. &
+    )
+    call assertEqual(error%has_thrown(), .false.)
+
+    call error%throw_if_not ( &
+      where = "exception_test_common", &
+      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+      message = "test error", &
+      code = 1004_i4, &
+      condition = .false. &
+    )
+    call assertEqual(error%has_thrown(), .true.)
+    call assertEqual(error%get_where(), "exception_test_common")
+    call assertEqual(error%get_kind_type(), EXCEPTION_KIND_TYPE_ERROR)
+    call assertEqual(error%get_message(), "test error")
+    call assertEqual(error%has_code(), .true.)
+    call assertEqual(error%get_code(), 1004_i4)
+    call assertEqual(error%has_cause(), .false.)
+  end subroutine exception_type_thrown_if_and_thrown_if_not_test_common
+
+    @test
+  subroutine exception_type_thrown_if_and_thrown_if_not_test_without_code()
+  implicit none (type, external)
+    type(exception_type) :: error
+
+    call error%init()
+
+    call error%throw_if ( &
+      where = "exception_test_common", &
+      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+      message = "test error", &
+      condition = .false. &
+    )
+    call assertEqual(error%has_thrown(), .false.)
+
+    call error%throw_if ( &
+      where = "exception_test_common", &
+      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+      message = "test error", &
+      condition = .true. &
+    )
+    call assertEqual(error%has_thrown(), .true.)
+    call assertEqual(error%get_where(), "exception_test_common")
+    call assertEqual(error%get_kind_type(), EXCEPTION_KIND_TYPE_ERROR)
+    call assertEqual(error%get_message(), "test error")
+    call assertEqual(error%has_code(), .false.)
+    call assertEqual(error%has_cause(), .false.)
+
+    call error%clear()
+
+    call error%throw_if_not ( &
+      where = "exception_test_common", &
+      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+      message = "test error", &
+      condition = .true. &
+    )
+    call assertEqual(error%has_thrown(), .false.)
+
+    call error%throw_if_not ( &
+      where = "exception_test_common", &
+      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+      message = "test error", &
+      condition = .false. &
+    )
+    call assertEqual(error%has_thrown(), .true.)
+    call assertEqual(error%get_where(), "exception_test_common")
+    call assertEqual(error%get_kind_type(), EXCEPTION_KIND_TYPE_ERROR)
+    call assertEqual(error%get_message(), "test error")
+    call assertEqual(error%has_code(), .false.)
+    call assertEqual(error%has_cause(), .false.)
+  end subroutine exception_type_thrown_if_and_thrown_if_not_test_without_code
+
+  @test
+  subroutine exception_type_clear_test()
+  implicit none (type, external)
+    type(exception_type) :: error
+
+    call error%init()
+    call assertEqual(error%has_thrown(), .false.)
+
+    call error%clear()
+    call assertEqual(error%has_thrown(), .false.)
+
+    call error%clear()
+    call error%clear()
+    call assertEqual(error%has_thrown(), .false.)
+
+    call error%clear()
+    call error%clear()
+    call error%clear()
+    call assertEqual(error%has_thrown(), .false.)
+
+    call error%throw( &
+      where = "exception_test_common", &
+      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+      message = "test error", &
+      code = 1004_i4 &
+    )
+    call assertEqual(error%has_thrown(), .true.)
+
+    call error%clear()
+    call assertEqual(error%has_thrown(), .false.)
+  end subroutine exception_type_clear_test
+
+  @test
+  subroutine exception_type_assignment_test()
+  implicit none (type, external)
+    type(exception_type) :: error, error_copy
+
+    call error%init()
+
+    call error%throw( &
+      where = "exception_test_common", &
+      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+      message = "test error", &
+      code = 1004_i4 &
+    )
+    call error%throw( &
+      where = "exception_test_common inner", &
+      kind_type = EXCEPTION_KIND_TYPE_WARNING, &
+      message = "test error new" &
+    )
+    call error%throw( &
+      where = "exception_test_common inner new", &
+      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+      message = "test error new new", &
+      code = 3001_i4 &
+    )
+    call error%throw( &
+      where = "exception_test_common outer", &
+      kind_type = EXCEPTION_KIND_TYPE_INFO, &
+      message = "end error", &
+      code = 1_i4 &
+    )
+
+    error_copy = error
+    call error%clear()
+
+    call assertEqual(error_copy%has_thrown(), .true.)
+    call assertEqual(error_copy%get_where(), "exception_test_common")
+    call assertEqual(error_copy%get_kind_type(), EXCEPTION_KIND_TYPE_ERROR)
+    call assertEqual(error_copy%get_message(), "test error")
+    call assertEqual(error_copy%has_code(), .true.)
+    call assertEqual(error_copy%get_code(), 1004_i4)
+    call assertEqual(error_copy%has_cause(), .true.)
+    block
+      type(exception_type) :: t
+
+      t = error_copy%get_cause()
+
+      call assertEqual(t%has_thrown(), .true.)
+      call assertEqual(t%get_where(), "exception_test_common inner")
+      call assertEqual(t%get_kind_type(), EXCEPTION_KIND_TYPE_WARNING)
+      call assertEqual(t%get_message(), "test error new")
+      call assertEqual(t%has_code(), .false.)
+      call assertEqual(t%has_cause(), .true.)
+
+      t = t%get_cause()
+
+      call assertEqual(t%has_thrown(), .true.)
+      call assertEqual(t%get_where(), "exception_test_common inner new")
+      call assertEqual(t%get_kind_type(), EXCEPTION_KIND_TYPE_ERROR)
+      call assertEqual(t%get_message(), "test error new new")
+      call assertEqual(t%has_code(), .true.)
+      call assertEqual(t%get_code(), 3001_i4)
+      call assertEqual(t%has_cause(), .true.)
+
+      t = t%get_cause()
+
+      call assertEqual(t%has_thrown(), .true.)
+      call assertEqual(t%get_where(), "exception_test_common outer")
+      call assertEqual(t%get_kind_type(), EXCEPTION_KIND_TYPE_INFO)
+      call assertEqual(t%get_message(), "end error")
+      call assertEqual(t%has_code(), .true.)
+      call assertEqual(t%get_code(), 1_i4)
+      call assertEqual(t%has_cause(), .false.)
+    end block
+  end subroutine exception_type_assignment_test
+
+  @test
+  subroutine exception_type_assignment_test_empty_error()
+  implicit none (type, external)
+    type(exception_type) :: error, error_copy
+
+    call error%init()
+
+    error_copy = error
+    call error%clear()
+
+    call assertEqual(error_copy%has_thrown(), .false.)
+  end subroutine exception_type_assignment_test_empty_error
+
+  @test
+  subroutine exception_type_get_cause_pointer_test()
+  implicit none (type, external)
+    type(exception_type) :: error
+
+    call error%init()
+
+    call error%throw( &
+      where = "exception_test_common", &
+      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+      message = "test error", &
+      code = 1004_i4 &
+    )
+    call error%throw( &
+      where = "exception_test_common inner", &
+      kind_type = EXCEPTION_KIND_TYPE_WARNING, &
+      message = "test error new" &
+    )
+    call error%throw( &
+      where = "exception_test_common inner new", &
+      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+      message = "test error new new", &
+      code = 3001_i4 &
+    )
+    call error%throw( &
+      where = "exception_test_common outer", &
+      kind_type = EXCEPTION_KIND_TYPE_INFO, &
+      message = "end error", &
+      code = 1_i4 &
+    )
+
+    block
+      type(exception_type), pointer :: t
+
+      t => error%get_cause_pointer()
+
+      call assertEqual(t%has_thrown(), .true.)
+      call assertEqual(t%get_where(), "exception_test_common inner")
+      call assertEqual(t%get_kind_type(), EXCEPTION_KIND_TYPE_WARNING)
+      call assertEqual(t%get_message(), "test error new")
+      call assertEqual(t%has_code(), .false.)
+      call assertEqual(t%has_cause(), .true.)
+
+      t => t%get_cause_pointer()
+
+      call assertEqual(t%has_thrown(), .true.)
+      call assertEqual(t%get_where(), "exception_test_common inner new")
+      call assertEqual(t%get_kind_type(), EXCEPTION_KIND_TYPE_ERROR)
+      call assertEqual(t%get_message(), "test error new new")
+      call assertEqual(t%has_code(), .true.)
+      call assertEqual(t%get_code(), 3001_i4)
+      call assertEqual(t%has_cause(), .true.)
+
+      t => t%get_cause_pointer()
+
+      call assertEqual(t%has_thrown(), .true.)
+      call assertEqual(t%get_where(), "exception_test_common outer")
+      call assertEqual(t%get_kind_type(), EXCEPTION_KIND_TYPE_INFO)
+      call assertEqual(t%get_message(), "end error")
+      call assertEqual(t%has_code(), .true.)
+      call assertEqual(t%get_code(), 1_i4)
+      call assertEqual(t%has_cause(), .false.)
+    end block
+  end subroutine exception_type_get_cause_pointer_test
+
+  @test
+  subroutine exception_type_throw_extremal_depth_test()
+  implicit none (type, external)
+    type(exception_type) :: error, error_copy
+
+    integer(i4), parameter :: N = 10000_i4
+
+    integer(i4) :: i
+
+    call error%init()
+
+    do i = 1, N
+      call error%throw( &
+        where = "exception_type_throw_extremal_depth_test", &
+        kind_type = EXCEPTION_KIND_TYPE_INFO, &
+        message = "extremal_depth_test", &
+        code = - 1_i4 &
+      )
+    end do
+
+    error_copy = error
+    call error%clear()
+
+    call assertEqual(error_copy%has_thrown(), .true.)
+    call assertEqual(error_copy%get_where(), "exception_type_throw_extremal_depth_test")
+    call assertEqual(error_copy%get_kind_type(), EXCEPTION_KIND_TYPE_INFO)
+    call assertEqual(error_copy%get_message(), "extremal_depth_test")
+    call assertEqual(error_copy%has_code(), .true.)
+    call assertEqual(error_copy%get_code(), - 1_i4)
+    call assertEqual(error_copy%has_cause(), .true.)
+    do i = 1, N
+      call error_copy%throw( &
+        where = "exception_type_throw_extremal_depth_test", &
+        kind_type = EXCEPTION_KIND_TYPE_INFO, &
+        message = "extremal_depth_test", &
+        code = - 1_i4 &
+      )
+    end do
+
+    error = error_copy
+    block
+      integer(i4) :: depth
+      type(exception_type), pointer :: tmp
+
+      depth = 2_i4
+      tmp => error%get_cause_pointer()
+      do while (tmp%has_cause())
+        tmp => tmp%get_cause_pointer()
+        depth = depth + 1_i4
+      end do
+
+      call assertEqual(depth, N + N)
+    end block
+  end subroutine exception_type_throw_extremal_depth_test
+
+  @test
+  subroutine print_exception_test_common()
+  implicit none (type, external)
+    type(exception_type) :: error
+
+    character(len = :), allocatable :: str
+
+    call error%init()
+    call print_exception(unit = str, error = error)
+    call assertEqual(str, &
+      " ________________" // new_line("a") // &
+      "________________" &
+    )
+
+    call error%throw( &
+      where = "exception_test_common", &
+      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+      message = "test error", &
+      code = 1004_i4 &
+    )
+    call print_exception(unit = str, error = error)
+    call assertEqual(str, &
+      " ________________" // new_line("a") // &
+      "ERROR     1004    exception_test_common : test error" // new_line("a") // &
+      "____" // new_line("a") // &
+      "________________" &
+    )
+
+    call error%throw( &
+      where = "exception_test_common inner", &
+      kind_type = EXCEPTION_KIND_TYPE_WARNING, &
+      message = "test error new" &
+    )
+    call print_exception(unit = str, error = error)
+    call assertEqual(str, &
+      " ________________" // new_line("a") // &
+      "ERROR     1004    exception_test_common : test error" // new_line("a") // &
+      "____" // new_line("a") // &
+      "WARNING         exception_test_common inner : test error new" // new_line("a") // &
+      "____" // new_line("a") // &
+      "________________" &
+    )
+
+    call error%throw( &
+      where = "exception_test_common inner new", &
+      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+      message = "test error new new", &
+      code = 3001_i4 &
+    )
+    call print_exception(unit = str, error = error)
+    call assertEqual(str, &
+      " ________________" // new_line("a") // &
+      "ERROR     1004    exception_test_common : test error" // new_line("a") // &
+      "____" // new_line("a") // &
+      "WARNING         exception_test_common inner : test error new" // new_line("a") // &
+      "____" // new_line("a") // &
+      "ERROR     3001    exception_test_common inner new : test error new new" &
+        // new_line("a") // &
+      "____" // new_line("a") // &
+      "________________" &
+    )
+
+    call error%throw( &
+      where = "exception_test_common outer", &
+      kind_type = EXCEPTION_KIND_TYPE_INFO, &
+      message = "end error", &
+      code = 1_i4 &
+    )
+    call print_exception(unit = str, error = error)
+    call assertEqual(str, &
+      " ________________" // new_line("a") // &
+      "ERROR     1004    exception_test_common : test error" // new_line("a") // &
+      "____" // new_line("a") // &
+      "WARNING         exception_test_common inner : test error new" // new_line("a") // &
+      "____" // new_line("a") // &
+      "ERROR     3001    exception_test_common inner new : test error new new" &
+        // new_line("a") // &
+      "____" // new_line("a") // &
+      "INFO     1    exception_test_common outer : end error" // new_line("a") // &
+      "____" // new_line("a") // &
+      "________________" &
+    )
+
+    print *, "test print_exception to a console"
+    print *, "found"
+    call print_exception(error = error)
+    print *, "expected"
+    print *, str
+    print *, "end test"
+  end subroutine print_exception_test_common
+
+
+
+
+
+
+
+
+
+  @before
+  subroutine BeforeAll()
+  implicit none (type, external)
+    print *, "srart tests"
+  end subroutine BeforeAll
+
+  @after
+  subroutine AfterAll()
+  implicit none (type, external)
+    print *, "end tests"
+  end subroutine AfterAll
+end module exception_test

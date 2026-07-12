@@ -27,14 +27,14 @@ private
 
     real(dp) :: max_abs_point_coordinate_value
   contains
-    procedure, pass :: build
+    procedure, pass(this) :: build
 
-    procedure, pass :: add_new_path_part
-    procedure, pass :: part_integration_strategy
+    procedure, pass(this) :: add_new_path_part
+    procedure, pass(this) :: part_integration_strategy
 
-    procedure, private, pass :: last_start_previous
-    procedure, private, pass ::  last_start_new
-    !> it is recomended to use this instead of transfer boundary point value dirrectly
+    procedure, private, pass(this) :: last_start_previous
+    procedure, private, pass(this) ::  last_start_new
+    !> it is recommended to use this instead of transfer boundary point value dirrectly
     !> while a builder is assempled
     !>
     !> last_start() for get the last value
@@ -45,9 +45,9 @@ private
     !> for confortable inserting new values and not repeating old values
     !> and replace the standart value for all future path parts
     generic :: last_start => last_start_previous, last_start_new
-    procedure, private, pass :: last_end_previous
-    procedure, private, pass :: last_end_new
-    !> it is recomended to use this instead of transfer boundary point value dirrectly
+    procedure, private, pass(this) :: last_end_previous
+    procedure, private, pass(this) :: last_end_new
+    !> it is recommended to use this instead of transfer boundary point value dirrectly
     !> while a builder is assempled
     !>
     !> last_end() for get the last value
@@ -59,11 +59,11 @@ private
     !> and replace the standart value for all future path parts
     generic :: last_end => last_end_previous, last_end_new
 
-    procedure, pass :: set_boundary_points
+    procedure, pass(this) :: set_boundary_points
 
-    procedure, pass :: set_min_abs_point_difference_between_boundary_points
+    procedure, pass(this) :: set_min_abs_point_difference_between_boundary_points
 
-    procedure, pass :: set_accuration
+    procedure, pass(this) :: set_accuracy
   end type integrator_builder_obj
 
   type :: integrator_obj
@@ -72,7 +72,7 @@ private
 
     real(dp) :: eps
   contains
-    procedure, pass :: integrate
+    procedure, pass(this) :: integrate
   end type integrator_obj
 
   interface
@@ -152,11 +152,11 @@ private
 
     !> set an integration strategy
     !> if it is not setted then the last strategy is used
-    module subroutine set_accuration(this, eps)
+    module subroutine set_accuracy(this, eps)
     implicit none (type, external)
       class(integrator_builder_obj), intent (inout) :: this
       real(dp), intent(in) :: eps
-    end subroutine set_accuration
+    end subroutine set_accuracy
   end interface
 
   interface

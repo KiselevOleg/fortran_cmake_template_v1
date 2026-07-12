@@ -31,17 +31,17 @@ private
     integer(i4) :: data_size = 0
   contains
     !> add a new value at the end
-    procedure, pass :: add_last => add_last_real64
+    procedure, pass(this) :: add_last => add_last_real64
     !> delete the last value
-    procedure, pass :: delete_last => delete_last_real64
-    procedure, pass :: get_value => get_value_real64
-    procedure, pass :: set_value => set_value_real64
-    procedure, pass :: get_size => get_size_real64
+    procedure, pass(this) :: delete_last => delete_last_real64
+    procedure, pass(this) :: get_value => get_value_real64
+    procedure, pass(this) :: set_value => set_value_real64
+    procedure, pass(this) :: get_size => get_size_real64
     !> preallocate inner data
-    procedure, pass :: reserve => reserve_real64
+    procedure, pass(this) :: reserve => reserve_real64
 
     !> get a result raw allocatable array
-    procedure, pass :: get_raw_array => get_raw_array_real64
+    procedure, pass(this) :: get_raw_array => get_raw_array_real64
   end type dynamic_array_real64
 
   interface
@@ -115,17 +115,17 @@ private
     integer(i4) :: data_size = 0
   contains
     !> add a new value at the end
-    procedure, pass :: add_last => add_last_int32
+    procedure, pass(this) :: add_last => add_last_int32
     !> delete the last value
-    procedure, pass :: delete_last => delete_last_int32
-    procedure, pass :: get_value => get_value_int32
-    procedure, pass :: set_value => set_value_int32
-    procedure, pass :: get_size => get_size_int32
+    procedure, pass(this) :: delete_last => delete_last_int32
+    procedure, pass(this) :: get_value => get_value_int32
+    procedure, pass(this) :: set_value => set_value_int32
+    procedure, pass(this) :: get_size => get_size_int32
     !> preallocate inner data
-    procedure, pass :: reserve => reserve_int32
+    procedure, pass(this) :: reserve => reserve_int32
 
     !> get a result raw allocatable array
-    procedure, pass :: get_raw_array => get_raw_array_int32
+    procedure, pass(this) :: get_raw_array => get_raw_array_int32
   end type dynamic_array_int32
 
   interface
@@ -199,17 +199,17 @@ private
     integer(i4) :: data_size = 0
   contains
     !> add a new value at the end
-    procedure, pass :: add_last => add_last_complex64
+    procedure, pass(this) :: add_last => add_last_complex64
     !> delete the last value
-    procedure, pass :: delete_last => delete_last_complex64
-    procedure, pass :: get_value => get_value_complex64
-    procedure, pass :: set_value => set_value_complex64
-    procedure, pass :: get_size => get_size_complex64
+    procedure, pass(this) :: delete_last => delete_last_complex64
+    procedure, pass(this) :: get_value => get_value_complex64
+    procedure, pass(this) :: set_value => set_value_complex64
+    procedure, pass(this) :: get_size => get_size_complex64
     !> preallocate inner data
-    procedure, pass :: reserve => reserve_complex64
+    procedure, pass(this) :: reserve => reserve_complex64
 
     !> get a result raw allocatable array
-    procedure, pass :: get_raw_array => get_raw_array_complex64
+    procedure, pass(this) :: get_raw_array => get_raw_array_complex64
   end type dynamic_array_complex64
 
   interface

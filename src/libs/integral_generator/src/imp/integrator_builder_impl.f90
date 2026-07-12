@@ -37,7 +37,7 @@ implicit none (type, external)
       !call move_alloc(from = this%part, to = res%part)
       allocate(res%part(size))
 
-      do concurrent(i = 1:size)
+      do concurrent (i = 1:size)
         res%part(i) = this%part(i)
       end do
     end associate
@@ -125,9 +125,9 @@ implicit none (type, external)
     this%part%min_abs_point_difference_between_start_and_end_points = value
   end procedure set_min_abs_point_difference_between_boundary_points
 
-  module procedure set_accuration
+  module procedure set_accuracy
     this%eps = eps
-  end procedure set_accuration
+  end procedure set_accuracy
 
 
 

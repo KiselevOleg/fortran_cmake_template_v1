@@ -60,6 +60,9 @@ And tools:
 │   ├── depends.png               # Dependency graph
 │   ├── include_list_all          # Include files from all project components
 │   ├── include_external_list_all # Include files from all external dependencies
+│   ├── Testing
+│   │   └── Temporary
+│   │       └── LastTest.log      # test log (with all print)
 │   └── src/
 │       └── libs/
 │           └── <project_component>/

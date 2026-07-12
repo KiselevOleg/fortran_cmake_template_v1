@@ -18,6 +18,6 @@ target_link_libraries(${LIBRARY_NAME}
     system
 )
 
-if(ENABLE_TESTS)
+if (ENABLE_TESTS)
   add_subdirectory(tests)
-endif()
+endif ()
