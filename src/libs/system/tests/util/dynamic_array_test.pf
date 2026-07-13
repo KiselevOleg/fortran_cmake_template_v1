@@ -1,6 +1,6 @@
 @test
 module dynamic_array_test
-use system___dynamic_array, only: dynamic_array_real64, dynamic_array_real64_constructor, &
+use system_util___dynamic_array, only: dynamic_array_real64, dynamic_array_real64_constructor, &
   dynamic_array_int32, dynamic_array_int32_constructor, &
   dynamic_array_complex64, dynamic_array_complex64_constructor
 use PFUnit, only: &

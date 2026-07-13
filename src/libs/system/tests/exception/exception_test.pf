@@ -1,6 +1,6 @@
 @test
 module exception_test
-use system___exception, only: exception_type, assignment(=), &
+use system_exception___exception, only: exception_type, assignment(=), &
   EXCEPTION_KIND_TYPE_ERROR, EXCEPTION_KIND_TYPE_WARNING, EXCEPTION_KIND_TYPE_INFO, print_exception
 use PFUnit, only: &
   assertEqual, & ! assertEqual(expected, actual, [tolerance], [message])

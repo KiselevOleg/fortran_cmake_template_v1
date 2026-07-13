@@ -1,5 +1,5 @@
 submodule(integration_template_recalculation) integration_template_recalculation_impl
-use system___assert, only: error_assert, error_assert_not, &
+use system_exception___assert, only: error_assert, error_assert_not, &
   warning_assert, warning_assert_not, &
   equals
 implicit none (type, external)

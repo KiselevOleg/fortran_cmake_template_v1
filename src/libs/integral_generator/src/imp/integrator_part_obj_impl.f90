@@ -1,5 +1,5 @@
 submodule(integrator) integrator_part_obj_impl
-use system___assert, only: error_assert, error_assert_not, &
+use system_exception___assert, only: error_assert, error_assert_not, &
   warning_assert, warning_assert_not, &
   equals
 implicit none (type, external)
