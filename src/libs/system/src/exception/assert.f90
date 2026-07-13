@@ -6,7 +6,7 @@ use, intrinsic :: iso_fortran_env, only: sp => real32, dp => real64, qp => real1
   i1 => int8, i2 => int16, i4 => int32, i8 => int64
 implicit none (type, external)
 private
-  character(len = *), parameter :: module_name = "system___assert"
+  character(len = *), parameter :: module_name = "system_exception___assert"
 
   public :: error_assert, error_assert_not
   public :: warning_assert, warning_assert_not
