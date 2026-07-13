@@ -2,6 +2,20 @@
 # STATIC LIBRARY WIRH AUTO NAMESPACE
 # ==========================================================
 
+if (NOT DEFINED OUTPUT_STRUCTURE__NAMES)
+  set(OUTPUT_STRUCTURE__NAMES "")
+endif ()
+list(FIND OUTPUT_STRUCTURE__NAMES "${LIBRARY_NAME}" INDEX)
+if (INDEX EQUAL -1)
+  message(STATUS "processing ${LIBRARY_NAME}")
+else ()
+  message(FATAL_ERROR "several structures with the same name ${LIBRARY_NAME}")
+endif ()
+
+if (NOT DEFINED OUTPUT_FILE_NAMES)
+  set(OUTPUT_FILE_NAMES "")
+endif ()
+
 set(GENERATED_SRC_DIR "${CMAKE_BINARY_DIR}/namespace_generated/${LIBRARY_NAME}")
 file(MAKE_DIRECTORY ${GENERATED_SRC_DIR})
 
@@ -20,6 +34,20 @@ foreach(file ${SRC_FILES})
   endif ()
 
   list(APPEND MODULE_NAMES ${fname})
+
+
+
+  set(output_file "${LIBRARY_NAME}___${file}")
+  list(FIND OUTPUT_FILE_NAMES "${output_file}" INDEX)
+  if (INDEX EQUAL -1)
+    # message(STATUS "generate a file ${output_file}")
+  else ()
+    message(FATAL_ERROR
+      "several package files with the same name ${output_file} at the library ${LIBRARY_NAME}"
+    )
+  endif ()
+
+  list(APPEND OUTPUT_FILE_NAMES ${module_name})
 endforeach()
 
 foreach(file ${SRC_FILES})
