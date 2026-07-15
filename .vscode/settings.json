@@ -3,6 +3,7 @@
     "${workspaceFolder}/build/include_list_all",
     "${workspaceFolder}/build/include_external_list_all"
   ],
+  "fortran.fortls.path": "${workspaceFolder}/.venv/bin/fortls",
   // "editor.rulers": [80, 120]
   "editor.rulers": [100]
 }

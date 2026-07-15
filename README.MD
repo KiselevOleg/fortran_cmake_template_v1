@@ -307,6 +307,16 @@ sudo pacman -S extra/gdb
 sudo apt-get install gdb
 ```
 
+### for vscode
+
+```bash
+python -m venv .venv
+source ./.venv/bin/activate
+pip install fortls
+fortls --version
+which fortls
+```
+
 ## Dependencies
 
 This project uses
