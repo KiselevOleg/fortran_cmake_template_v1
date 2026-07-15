@@ -12,7 +12,7 @@ use, intrinsic :: iso_fortran_env, only: sp => real32, dp => real64, qp => real1
 implicit none (type, external)
 public
 
-  character(len = *), parameter :: module_name = "system___assert_test"
+  character(len = *), parameter :: module_name = "system_exception___assert_test"
 
 contains
 

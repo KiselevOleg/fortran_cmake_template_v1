@@ -11,7 +11,7 @@ use, intrinsic :: iso_fortran_env, only: sp => real32, dp => real64, qp => real1
 implicit none (type, external)
 public
 
-  character(len = *), parameter :: module_name = "system___exception_test"
+  character(len = *), parameter :: module_name = "system_exception___exception_test"
 
 contains
 
