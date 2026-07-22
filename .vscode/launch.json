@@ -9,7 +9,7 @@
       //"program": "${workspaceFolder}/build/src/libs/integral_generator/tests/integrator_test",
       //"program": "${workspaceFolder}/build/src/libs/integral_generator/tests/integration_path_part_custom_curve_test",
       //"program": "${workspaceFolder}/build/src/libs/integral_generator/tests/integrator_custom_curve_test",
-      "program": "${workspaceFolder}/build/src/libs/system/tests/exception_test",
+      "program": "${workspaceFolder}/build/src/libs/system/tests/json_api_test",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
