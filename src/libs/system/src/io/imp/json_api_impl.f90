@@ -9,61 +9,188 @@ implicit none (type, external)
   contains
 
   module procedure init
+    validation: block
+      if (error%has_thrown()) return
+    end block validation
+
     call this%json_impl%initialize()
 
     call check_for_common_errors(this, ".init", error)
   end procedure init
 
   module procedure load_from_file
+    validation: block
+      if (error%has_thrown()) return
+    end block validation
+
     call this%json_impl%load_file(file)
 
     call check_for_common_errors(this, ".load_from_file", error)
   end procedure load_from_file
   module procedure load_from_string
-    call error%throw_if ( &
-      where = module_name // ".load_from_string", &
-      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
-      message = "path is incorrect", &
-      ! code = 0_i4, &
-      condition = trim(string) == "" &
-    )
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".load_from_string", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(string) == "" &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
 
     call this%json_impl%load_from_string(string)
 
     call check_for_common_errors(this, ".load_from_string", error)
   end procedure load_from_string
   module procedure save_to_file
+    validation: block
+      if (error%has_thrown()) return
+    end block validation
+
     call this%json_impl%print_file(file)
 
     call check_for_common_errors(this, ".save_to_file", error)
   end procedure save_to_file
   module procedure save_to_string
+    validation: block
+      if (error%has_thrown()) return
+    end block validation
+
     call this%json_impl%print_to_string(string)
 
     call check_for_common_errors(this, ".save_to_string", error)
   end procedure save_to_string
 
   module procedure get_int32
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".get_int32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+      call error%throw_if_not ( &
+        where = module_name // ".get_int32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "new_path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
+
     call this%json_impl%get(path, value)
 
     call check_for_common_errors(this, ".get_int32", error)
   end procedure get_int32
   module procedure get_real32
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".get_real32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+      call error%throw_if_not ( &
+        where = module_name // ".get_real32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "new_path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
+
     call this%json_impl%get(path, value)
 
     call check_for_common_errors(this, ".get_real32", error)
   end procedure get_real32
   module procedure get_real64
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".get_real64", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+      call error%throw_if_not ( &
+        where = module_name // ".get_real64", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "new_path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
+
     call this%json_impl%get(path, value)
 
     call check_for_common_errors(this, ".get_real64", error)
   end procedure get_real64
   module procedure get_logical
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".get_logical", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+      call error%throw_if_not ( &
+        where = module_name // ".get_logical", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "new_path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
+
     call this%json_impl%get(path, value)
 
     call check_for_common_errors(this, ".get_logical", error)
   end procedure get_logical
   module procedure get_string
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".get_string", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+      call error%throw_if_not ( &
+        where = module_name // ".get_string", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "new_path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
+
     call this%json_impl%get(path, value)
 
     call check_for_common_errors(this, ".get_string", error)
@@ -71,6 +198,20 @@ implicit none (type, external)
 
   module procedure put_int32
     logical :: found
+
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".put_int32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
 
     if (this%json_impl%valid_path(path)) then
       call this%json_impl%update(path, value, found)
@@ -83,6 +224,20 @@ implicit none (type, external)
   module procedure put_real32
     logical :: found
 
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".put_real32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
+
     if (this%json_impl%valid_path(path)) then
       call this%json_impl%update(path, value, found)
     else
@@ -93,6 +248,20 @@ implicit none (type, external)
   end procedure put_real32
   module procedure put_real64
     logical :: found
+
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".put_real64", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
 
     if (this%json_impl%valid_path(path)) then
       call this%json_impl%update(path, value, found)
@@ -105,6 +274,20 @@ implicit none (type, external)
   module procedure put_logical
     logical :: found
 
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".put_logical", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
+
     if (this%json_impl%valid_path(path)) then
       call this%json_impl%update(path, value, found)
     else
@@ -115,6 +298,20 @@ implicit none (type, external)
   end procedure put_logical
   module procedure put_string
     logical :: found
+
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".put_string", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
 
     if (this%json_impl%valid_path(path)) then
       call this%json_impl%update(path, value, found)
@@ -127,19 +324,46 @@ implicit none (type, external)
 
 
   module procedure exists
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".exists", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
+
     value = this%json_impl%valid_path(path)
 
     call check_for_common_errors(this, ".exists", error)
   end procedure exists
   module procedure remove
-    if (.not. this%json_impl%valid_path(path)) then
-      call error%throw ( &
-        where = module_name // ".move_path", &
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".remove", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
-        message = "new_path is incorrect" &
-        ! code = 0_i4 &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
       )
-    end if
+
+      call error%throw_if_not ( &
+        where = module_name // ".remove", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
 
     call this%json_impl%remove(path)
 
@@ -149,13 +373,27 @@ implicit none (type, external)
   module procedure get_element_type
     integer(i4) :: t
 
-    call error%throw_if_not ( &
-      where = module_name // ".get_element_type", &
-      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
-      message = "path is incorrect", &
-      ! code = 0_i4, &
-      condition = this%json_impl%valid_path(path) &
-    )
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".get_element_type", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      call error%throw_if_not ( &
+        where = module_name // ".get_element_type", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
 
     call this%json_impl%info(path, var_type = t)
 
@@ -188,6 +426,28 @@ implicit none (type, external)
   module procedure is_object
     integer(i1) :: t
 
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".is_object", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      call error%throw_if_not ( &
+        where = module_name // ".is_object", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
+
     call get_element_type(this, path, t, error)
 
     value = t == JSON_TYPE_OBJECT
@@ -196,6 +456,28 @@ implicit none (type, external)
   end procedure is_object
   module procedure is_array
     integer(i1) :: t
+
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".is_array", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      call error%throw_if_not ( &
+        where = module_name // ".is_array", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
 
     call get_element_type(this, path, t, error)
 
@@ -206,6 +488,28 @@ implicit none (type, external)
   module procedure is_string
     integer(i1) :: t
 
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".is_string", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      call error%throw_if_not ( &
+        where = module_name // ".is_string", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
+
     call get_element_type(this, path, t, error)
 
     value = t == JSON_TYPE_STRING
@@ -214,6 +518,28 @@ implicit none (type, external)
   end procedure is_string
   module procedure is_integer
     integer(i1) :: t
+
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".is_integer", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      call error%throw_if_not ( &
+        where = module_name // ".is_integer", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
 
     call get_element_type(this, path, t, error)
 
@@ -224,6 +550,28 @@ implicit none (type, external)
   module procedure is_real
     integer(i1) :: t
 
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".is_real", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      call error%throw_if_not ( &
+        where = module_name // ".is_real", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
+
     call get_element_type(this, path, t, error)
 
     value = t == JSON_TYPE_REAL
@@ -233,6 +581,28 @@ implicit none (type, external)
   module procedure is_boolean
     integer(i1) :: t
 
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".is_boolean", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      call error%throw_if_not ( &
+        where = module_name // ".iis_boolean", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
+
     call get_element_type(this, path, t, error)
 
     value = t == JSON_TYPE_BOOLEAN
@@ -241,6 +611,28 @@ implicit none (type, external)
   end procedure is_boolean
   module procedure is_null
     integer(i1) :: t
+
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".is_null", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      call error%throw_if_not ( &
+        where = module_name // ".is_null", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
 
     call get_element_type(this, path, t, error)
 
@@ -252,65 +644,135 @@ implicit none (type, external)
   module procedure array_put_empty
     integer(i4) :: m(0)
 
-    call error%throw_if ( &
-      where = module_name // ".array_put_empty", &
-      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
-      message = "path is incorrect", &
-      ! code = 0_i4, &
-      condition = this%json_impl%valid_path(path) &
-    )
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".array_put_empty", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      call error%throw_if ( &
+        where = module_name // ".array_put_empty", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
 
     call this%json_impl%add(path, m)
 
     call check_for_common_errors(this, ".array_put_empty", error)
   end procedure array_put_empty
   module procedure array_put_int32
-    call error%throw_if ( &
-      where = module_name // ".array_put_int32", &
-      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
-      message = "path is incorrect", &
-      ! code = 0_i4, &
-      condition = this%json_impl%valid_path(path) &
-    )
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".array_put_int32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      call error%throw_if ( &
+        where = module_name // ".array_put_int32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
 
     call this%json_impl%add(path, values)
 
     call check_for_common_errors(this, ".array_put_int32", error)
   end procedure array_put_int32
   module procedure array_put_real32
-    call error%throw_if ( &
-      where = module_name // ".array_put_real32", &
-      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
-      message = "path is incorrect", &
-      ! code = 0_i4, &
-      condition = this%json_impl%valid_path(path) &
-    )
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".array_put_real32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      call error%throw_if ( &
+        where = module_name // ".array_put_real32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
 
     call this%json_impl%add(path, values)
 
-    call check_for_common_errors(this, ".array_put_real32", error)
+    call check_for_common_errors(this, ".array_put_rreal64", error)
   end procedure array_put_real32
   module procedure array_put_real64
-    call error%throw_if ( &
-      where = module_name // ".array_put_real64", &
-      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
-      message = "path is incorrect", &
-      ! code = 0_i4, &
-      condition = this%json_impl%valid_path(path) &
-    )
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".array_put_int32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      call error%throw_if ( &
+        where = module_name // ".array_put_real64", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
 
     call this%json_impl%add(path, values)
 
     call check_for_common_errors(this, ".array_put_real64", error)
   end procedure array_put_real64
   module procedure array_put_logical
-    call error%throw_if ( &
-      where = module_name // ".array_put_logical", &
-      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
-      message = "path is incorrect", &
-      ! code = 0_i4, &
-      condition = this%json_impl%valid_path(path) &
-    )
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".array_put_logical", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      call error%throw_if ( &
+        where = module_name // ".array_put_logical", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
 
     call this%json_impl%add(path, values)
 
@@ -321,13 +783,27 @@ implicit none (type, external)
 
     character(len = :), allocatable :: strs(:)
 
-    call error%throw_if ( &
-      where = module_name // ".array_put_string", &
-      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
-      message = "path is incorrect", &
-      ! code = 0_i4, &
-      condition = this%json_impl%valid_path(path) &
-    )
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".array_put_string", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      call error%throw_if ( &
+        where = module_name // ".array_put_string", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
 
     call this%array_put(path, error)
     if (error%has_thrown()) return
@@ -346,15 +822,37 @@ implicit none (type, external)
   module procedure array_get_size
     logical :: is_array_v
 
-    call this%is_array(path, is_array_v, error)
-    if (error%has_thrown()) return
-    call error%throw_if_not ( &
-      where = module_name // ".array_get_size", &
-      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
-      message = "path is incorrect or a value is not an array", &
-      ! code = 0_i4, &
-      condition = is_array_v &
-    )
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".array_get_size", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      call error%throw_if_not ( &
+        where = module_name // ".array_get_size", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      call this%is_array(path, is_array_v, error)
+      if (error%has_thrown()) return
+      call error%throw_if_not ( &
+        where = module_name // ".array_get_size", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect or a value is not an array", &
+        ! code = 0_i4, &
+        condition = is_array_v &
+      )
+
+      if (error%has_thrown()) return
+    end block validation
+
+
 
     call this%json_impl%info(path, n_children = value)
 
@@ -364,15 +862,55 @@ implicit none (type, external)
   module procedure array_get_int32
     logical :: is_array_v
 
-    call this%is_array(path, is_array_v, error)
-    if (error%has_thrown()) return
-    call error%throw_if_not ( &
-      where = module_name // ".array_get_int32", &
-      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
-      message = "path is incorrect or a value is not an array", &
-      ! code = 0_i4, &
-      condition = is_array_v &
-    )
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".array_get_int32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      call error%throw_if_not ( &
+        where = module_name // ".array_get_int32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      call this%is_array(path, is_array_v, error)
+      if (error%has_thrown()) return
+      call error%throw_if_not ( &
+        where = module_name // ".array_get_int32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect or a value is not an array", &
+        ! code = 0_i4, &
+        condition = is_array_v &
+      )
+      b1: block
+        integer(i4) :: size_v
+        logical :: type_correct
+
+        call this%array_get_size(path, size_v, error)
+        if (error%has_thrown()) return
+        if (size_v == 0_i4) exit b1
+
+        call this%is_integer(path // "(1)", type_correct, error)
+        if (error%has_thrown()) return
+        call error%throw_if_not ( &
+          where = module_name // ".array_get_int32", &
+          kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+          message = "the first element in the array has not a required type", &
+          ! code = 0_i4, &
+          condition = type_correct &
+        )
+      end block b1
+
+      if (error%has_thrown()) return
+    end block validation
+
+
 
     call this%json_impl%get(path, values)
 
@@ -381,15 +919,55 @@ implicit none (type, external)
   module procedure array_get_real32
     logical :: is_array_v
 
-    call this%is_array(path, is_array_v, error)
-    if (error%has_thrown()) return
-    call error%throw_if_not ( &
-      where = module_name // ".array_get_real32", &
-      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
-      message = "path is incorrect or a value is not an array", &
-      ! code = 0_i4, &
-      condition = is_array_v &
-    )
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".array_get_real32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      call error%throw_if_not ( &
+        where = module_name // ".array_get_real32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      call this%is_array(path, is_array_v, error)
+      if (error%has_thrown()) return
+      call error%throw_if_not ( &
+        where = module_name // ".array_get_real32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect or a value is not an array", &
+        ! code = 0_i4, &
+        condition = is_array_v &
+      )
+      b1: block
+        integer(i4) :: size_v
+        logical :: type_correct
+
+        call this%array_get_size(path, size_v, error)
+        if (error%has_thrown()) return
+        if (size_v == 0_i4) exit b1
+
+        call this%is_real(path // "(1)", type_correct, error)
+        if (error%has_thrown()) return
+        call error%throw_if_not ( &
+          where = module_name // ".array_get_real32", &
+          kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+          message = "the first element in the array has not a required type", &
+          ! code = 0_i4, &
+          condition = type_correct &
+        )
+      end block b1
+
+      if (error%has_thrown()) return
+    end block validation
+
+
 
     call this%json_impl%get(path, values)
 
@@ -398,15 +976,55 @@ implicit none (type, external)
   module procedure array_get_real64
     logical :: is_array_v
 
-    call this%is_array(path, is_array_v, error)
-    if (error%has_thrown()) return
-    call error%throw_if_not ( &
-      where = module_name // ".array_get_real64", &
-      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
-      message = "path is incorrect or a value is not an array", &
-      ! code = 0_i4, &
-      condition = is_array_v &
-    )
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".array_get_real64", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      call error%throw_if_not ( &
+        where = module_name // ".array_get_real64", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      call this%is_array(path, is_array_v, error)
+      if (error%has_thrown()) return
+      call error%throw_if_not ( &
+        where = module_name // ".array_get_real64", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect or a value is not an array", &
+        ! code = 0_i4, &
+        condition = is_array_v &
+      )
+      b1: block
+        integer(i4) :: size_v
+        logical :: type_correct
+
+        call this%array_get_size(path, size_v, error)
+        if (error%has_thrown()) return
+        if (size_v == 0_i4) exit b1
+
+        call this%is_real(path // "(1)", type_correct, error)
+        if (error%has_thrown()) return
+        call error%throw_if_not ( &
+          where = module_name // ".array_get_real64", &
+          kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+          message = "the first element in the array has not a required type", &
+          ! code = 0_i4, &
+          condition = type_correct &
+        )
+      end block b1
+
+      if (error%has_thrown()) return
+    end block validation
+
+
 
     call this%json_impl%get(path, values)
 
@@ -415,15 +1033,55 @@ implicit none (type, external)
   module procedure array_get_logical
     logical :: is_array_v
 
-    call this%is_array(path, is_array_v, error)
-    if (error%has_thrown()) return
-    call error%throw_if_not ( &
-      where = module_name // ".array_get_logical", &
-      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
-      message = "path is incorrect or a value is not an array", &
-      ! code = 0_i4, &
-      condition = is_array_v &
-    )
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".array_get_logical", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      call error%throw_if_not ( &
+        where = module_name // ".array_get_logical", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      call this%is_array(path, is_array_v, error)
+      if (error%has_thrown()) return
+      call error%throw_if_not ( &
+        where = module_name // ".array_get_logical", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect or a value is not an array", &
+        ! code = 0_i4, &
+        condition = is_array_v &
+      )
+      b1: block
+        integer(i4) :: size_v
+        logical :: type_correct
+
+        call this%array_get_size(path, size_v, error)
+        if (error%has_thrown()) return
+        if (size_v == 0_i4) exit b1
+
+        call this%is_boolean(path // "(1)", type_correct, error)
+        if (error%has_thrown()) return
+        call error%throw_if_not ( &
+          where = module_name // ".array_get_slogical", &
+          kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+          message = "the first element in the array has not a required type", &
+          ! code = 0_i4, &
+          condition = type_correct &
+        )
+      end block b1
+
+      if (error%has_thrown()) return
+    end block validation
+
+
 
     call this%json_impl%get(path, values)
 
@@ -436,15 +1094,55 @@ implicit none (type, external)
 
     integer(i4) :: i
 
-    call this%is_array(path, is_array_v, error)
-    if (error%has_thrown()) return
-    call error%throw_if_not ( &
-      where = module_name // ".array_get_logical", &
-      kind_type = EXCEPTION_KIND_TYPE_ERROR, &
-      message = "path is incorrect or a value is not an array", &
-      ! code = 0_i4, &
-      condition = is_array_v &
-    )
+    validation: block
+      call error%throw_if ( &
+        where = module_name // ".array_get_string", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = trim(path) == "" &
+      )
+
+      call error%throw_if_not ( &
+        where = module_name // ".array_get_string", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect", &
+        ! code = 0_i4, &
+        condition = this%json_impl%valid_path(path) &
+      )
+
+      call this%is_array(path, is_array_v, error)
+      if (error%has_thrown()) return
+      call error%throw_if_not ( &
+        where = module_name // ".array_get_string", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path is incorrect or a value is not an array", &
+        ! code = 0_i4, &
+        condition = is_array_v &
+      )
+      b1: block
+        integer(i4) :: size_v
+        logical :: type_correct
+
+        call this%array_get_size(path, size_v, error)
+        if (error%has_thrown()) return
+        if (size_v == 0_i4) exit b1
+
+        call this%is_string(path // "(1)", type_correct, error)
+        if (error%has_thrown()) return
+        call error%throw_if_not ( &
+          where = module_name // ".array_get_string", &
+          kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+          message = "the first element in the array has not a required type", &
+          ! code = 0_i4, &
+          condition = type_correct &
+        )
+      end block b1
+
+      if (error%has_thrown()) return
+    end block validation
+
+
 
     call this%json_impl%get(path, data, len_data_i)
     allocate(values(size(data)))
