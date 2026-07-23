@@ -106,3 +106,22 @@ file(COPY
     "${CMAKE_SOURCE_DIR}/external_dependencies/h5fortran/build/include/"
     DESTINATION "${ALL_EXTERNAL_INCLUDE_DIR}"
 )
+
+# ==========================================================
+# FORTRAN_REGEX
+# ==========================================================
+
+add_library(fortran_regex STATIC IMPORTED GLOBAL)
+set_target_properties(fortran_regex PROPERTIES
+    IMPORTED_LOCATION
+        "${CMAKE_SOURCE_DIR}/external_dependencies/fortran-regex/build/release/lib/libregex.a"
+    INTERFACE_INCLUDE_DIRECTORIES
+        "${CMAKE_SOURCE_DIR}/external_dependencies/fortran-regex/build/release/include"
+    INTERFACE_LINK_LIBRARIES
+        "h5fortran;hdf5_hl_fortran-static"
+)
+
+file(COPY
+    "${CMAKE_SOURCE_DIR}/external_dependencies/fortran-regex/build/release/include/"
+    DESTINATION "${ALL_EXTERNAL_INCLUDE_DIR}"
+)

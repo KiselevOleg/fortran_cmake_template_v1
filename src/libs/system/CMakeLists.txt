@@ -18,6 +18,7 @@ set(SRC_FILES
 include(../../../cmake/for_libraries/generate_library_with_package.cmake)
 
 target_link_libraries(${LIBRARY_NAME} PRIVATE jsonfortran)
+target_link_libraries(${LIBRARY_NAME} PRIVATE fortran_regex)
 
 if (ENABLE_TESTS)
   add_subdirectory(tests)

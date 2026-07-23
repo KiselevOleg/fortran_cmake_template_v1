@@ -312,9 +312,18 @@ sudo apt-get install gdb
 ```bash
 python -m venv .venv
 source ./.venv/bin/activate
+
+# for interactive code
 pip install fortls
 fortls --version
 which fortls
+
+# for coplime some external dependencies (may be usefull)
+pip install fpm
+fpm --version
+which fpm
+
+deactivate
 ```
 
 ## Dependencies
