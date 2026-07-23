@@ -228,7 +228,7 @@ if [ -d "fortran-regex" ]; then
     exit 0
 fi
 
-git clone https://github.com/jeyemhex/fortran-regex.git
+git clone https://github.com/perazz/fortran-regex.git
 cd fortran-regex
 #../../.venv/bin/fpm build
 #../../.venv/bin/fpm install --prefix ./build/release
