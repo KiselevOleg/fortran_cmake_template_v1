@@ -11,6 +11,8 @@ set(SRC_FILES
   src/exception/imp/exception_impl.f90
   src/io/json_api.f90
   src/io/imp/json_api_impl.f90
+  src/util/regex_api.f90
+  src/util/imp/regex_api_impl.f90
   src/util/dynamic_array.f90
   src/util/imp/dynamic_array_impl.f90
 )

@@ -1,0 +1,177 @@
+@test
+module regex_api_test
+use system_util___regex_api, only: regex_api_type
+use system_exception___exception, only: exception_type, assignment(=), &
+  EXCEPTION_KIND_TYPE_ERROR, EXCEPTION_KIND_TYPE_WARNING, EXCEPTION_KIND_TYPE_INFO, print_exception
+use PFUnit, only: &
+  assertEqual, & ! assertEqual(expected, actual, [tolerance], [message])
+  assertNotEqual, & ! assertNotEqual(expected, actual, [tolerance], [message])
+  assertTrue ! assertTrue(condition, [message])
+use, intrinsic :: iso_fortran_env, only: sp => real32, dp => real64, qp => real128, &
+  i1 => int8, i2 => int16, i4 => int32, i8 => int64
+implicit none (type, external)
+public
+  character(len = *), parameter :: module_name = "system_util___regex_api_test"
+contains
+  @test
+  subroutine compile_regex_test()
+  implicit none (type, external)
+    type(regex_api_type) :: regex_api
+    type(exception_type) :: error
+
+    call regex_api%compile_regex("^srt_[a-z]*&", error)
+    call check_if_error_is_not_thrown(error)
+
+    call regex_api%compile_regex("[we-3", error)
+    call check_if_error_is_thrown(error)
+  end subroutine compile_regex_test
+
+
+  @test
+  subroutine regex_find_first_match_test()
+  implicit none (type, external)
+    type(regex_api_type) :: regex_api
+    type(exception_type) :: error
+
+    integer(i4) :: start, end
+
+    call regex_api%regex_find_first_match("str_qwe", start, end, error)
+    call check_if_error_is_thrown(error)
+    call error%clear()
+
+    call regex_api%compile_regex("^str_[a-z]*$", error)
+    call check_if_error_is_not_thrown(error)
+
+    call regex_api%regex_find_first_match("str_qwe", start, end, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = 1_i4, &
+      actual = start, &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = 7_i4, &
+      actual = end, &
+      message = "incorrect result" &
+    )
+
+    call regex_api%regex_find_first_match("str_1", start, end, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = - 1_i4, &
+      actual = start, &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = - 1_i4, &
+      actual = end, &
+      message = "incorrect result" &
+    )
+
+    call regex_api%regex_find_first_match("", start, end, error)
+    call check_if_error_is_thrown(error)
+    call error%clear()
+
+    call regex_api%compile_regex("str", error)
+    call check_if_error_is_not_thrown(error)
+
+    call regex_api%regex_find_first_match("str_qwe", start, end, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = 1_i4, &
+      actual = start, &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = 3_i4, &
+      actual = end, &
+      message = "incorrect result" &
+    )
+    call regex_api%regex_find_first_match("qwe_str", start, end, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = 5_i4, &
+      actual = start, &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = 7_i4, &
+      actual = end, &
+      message = "incorrect result" &
+    )
+    call regex_api%regex_find_first_match("qwe_str_qwe", start, end, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = 5_i4, &
+      actual = start, &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = 7_i4, &
+      actual = end, &
+      message = "incorrect result" &
+    )
+
+    call regex_api%regex_find_first_match("ster_1", start, end, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = - 1_i4, &
+      actual = start, &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = - 1_i4, &
+      actual = end, &
+      message = "incorrect result" &
+    )
+
+    call regex_api%regex_find_first_match("", start, end, error)
+    call check_if_error_is_thrown(error)
+  end subroutine regex_find_first_match_test
+
+
+
+
+
+
+
+  subroutine check_if_error_is_not_thrown(error)
+  implicit none (type, external)
+    type(exception_type), intent(in) :: error
+
+    if (error%has_thrown()) then
+      call print_exception(error)
+    end if
+    call assertTrue(.not. error%has_thrown())
+  end subroutine check_if_error_is_not_thrown
+  subroutine check_if_error_is_thrown(error)
+  implicit none (type, external)
+    type(exception_type), intent(in) :: error
+
+    if (error%has_thrown()) then
+      call print_exception(error)
+    end if
+    call assertTrue(error%has_thrown())
+  end subroutine check_if_error_is_thrown
+
+
+
+
+
+
+
+
+
+
+  @before
+  subroutine BeforeAll()
+  implicit none (type, external)
+    print *, "srart tests"
+  end subroutine BeforeAll
+
+  @after
+  subroutine AfterAll()
+  implicit none (type, external)
+    print *, "end tests"
+  end subroutine AfterAll
+end module regex_api_test
