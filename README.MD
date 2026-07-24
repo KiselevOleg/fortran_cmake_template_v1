@@ -350,3 +350,6 @@ This project uses
 (recommended for input and out large data that is used by fortran programs).
 [h5fortran](https://github.com/geospace-code/h5fortran.git)
 and hdf5 that is its dependency [hdf5](https://github.com/HDFGroup/hdf5.git)
+
+- fortran-regex for regular expression tools.
+[fortran_regex](https://github.com/perazz/fortran-regex.git)
