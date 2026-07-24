@@ -82,7 +82,13 @@ And tools:
 
 ## Quick start (fast copy)
 
-Clean and rebuild
+- 1 Install external dependencies
+
+```bash
+for f in ./cmake/add_dependencies_scripts/*.sh; do bash "$f" & done; wait
+```
+
+- 2 Clean and rebuild
 
 ```bash
 # Clean
@@ -97,21 +103,21 @@ cmake --build build --target test_extended
 cmake --build build --target project_docs
 ```
 
-run
+- 3 run
 
 ```bash
 ./build/main
 ```
 
-Generate dependency graph
+To add new code to the libs directory it is recommended to use pre-prepared code as an example.
+
+- 4 (optional) Generate dependency graph
 
 ```bash
 # requires to add --graphviz=./build/depends.dot
 # cmake -G Ninja -S . -B build -DCMAKE_BUILD_TYPE=Release --graphviz=./build/depends.dot
 dot -Tpng -o build/depends.png build/depends.dot
 ```
-
-To add new code to the libs directory it is recommended to use pre-prepared code as an example.
 
 ## Requirements
 
