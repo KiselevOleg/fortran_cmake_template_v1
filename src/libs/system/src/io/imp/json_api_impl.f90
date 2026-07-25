@@ -1,6 +1,7 @@
 submodule(json_api) json_api_impl
 use json_module, only: json_core, json_value, &
   json_integer, json_real, json_logical, json_string, json_null, json_object, json_array
+use system_util___regex_api, only: regex_api_type
 use assert, only: error_assert, error_assert_not, &
   warning_assert, warning_assert_not, &
   equals
@@ -67,6 +68,14 @@ implicit none (type, external)
 
   module procedure get_int32
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".get_int32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".get_int32", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -93,6 +102,14 @@ implicit none (type, external)
   end procedure get_int32
   module procedure get_real32
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".get_real32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".get_real32", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -119,6 +136,14 @@ implicit none (type, external)
   end procedure get_real32
   module procedure get_real64
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".get_real64", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".get_real64", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -145,6 +170,13 @@ implicit none (type, external)
   end procedure get_real64
   module procedure get_logical
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".get_logical", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
       call error%throw_if ( &
         where = module_name // ".get_logical", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -171,6 +203,14 @@ implicit none (type, external)
   end procedure get_logical
   module procedure get_string
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".get_string", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".get_string", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -200,6 +240,14 @@ implicit none (type, external)
     logical :: found
 
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".put_int32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".put_int32", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -225,6 +273,14 @@ implicit none (type, external)
     logical :: found
 
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".put_real32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".put_real32", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -250,6 +306,14 @@ implicit none (type, external)
     logical :: found
 
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".put_real64", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".put_real64", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -275,6 +339,14 @@ implicit none (type, external)
     logical :: found
 
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".put_logical", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".put_logical", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -300,6 +372,14 @@ implicit none (type, external)
     logical :: found
 
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".put_string", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".put_string", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -325,6 +405,14 @@ implicit none (type, external)
 
   module procedure exists
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".exists", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".exists", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -344,6 +432,14 @@ implicit none (type, external)
   end procedure exists
   module procedure remove
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".remove", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".remove", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -374,6 +470,14 @@ implicit none (type, external)
     integer(i4) :: t
 
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".get_element_type", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".get_element_type", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -427,6 +531,14 @@ implicit none (type, external)
     integer(i1) :: t
 
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".is_object", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".is_object", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -458,6 +570,14 @@ implicit none (type, external)
     integer(i1) :: t
 
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".is_array", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".is_array", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -489,6 +609,14 @@ implicit none (type, external)
     integer(i1) :: t
 
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".is_string", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".is_string", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -520,6 +648,14 @@ implicit none (type, external)
     integer(i1) :: t
 
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".is_integer", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".is_integer", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -551,6 +687,14 @@ implicit none (type, external)
     integer(i1) :: t
 
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".is_real", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".is_real", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -582,6 +726,14 @@ implicit none (type, external)
     integer(i1) :: t
 
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".is_boolean", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".is_boolean", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -613,6 +765,14 @@ implicit none (type, external)
     integer(i1) :: t
 
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".is_null", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".is_null", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -645,6 +805,14 @@ implicit none (type, external)
     integer(i4) :: m(0)
 
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".array_put_empty", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".array_put_empty", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -672,6 +840,14 @@ implicit none (type, external)
   end procedure array_put_empty
   module procedure array_put_int32
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".array_put_int32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".array_put_int32", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -699,6 +875,14 @@ implicit none (type, external)
   end procedure array_put_int32
   module procedure array_put_real32
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".array_put_real32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".array_put_real32", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -726,6 +910,14 @@ implicit none (type, external)
   end procedure array_put_real32
   module procedure array_put_real64
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".array_put_real64", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".array_put_int32", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -753,6 +945,14 @@ implicit none (type, external)
   end procedure array_put_real64
   module procedure array_put_logical
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".array_put_logical", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".array_put_logical", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -784,6 +984,14 @@ implicit none (type, external)
     character(len = :), allocatable :: strs(:)
 
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".array_put_string", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".array_put_string", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -823,6 +1031,14 @@ implicit none (type, external)
     logical :: is_array_v
 
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".array_get_size", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".array_get_size", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -863,6 +1079,14 @@ implicit none (type, external)
     logical :: is_array_v
 
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".array_get_int32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".array_get_int32", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -920,6 +1144,14 @@ implicit none (type, external)
     logical :: is_array_v
 
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".array_get_real32", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".array_get_real32", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -977,6 +1209,14 @@ implicit none (type, external)
     logical :: is_array_v
 
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".array_get_real64", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".array_get_real64", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -1034,6 +1274,14 @@ implicit none (type, external)
     logical :: is_array_v
 
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".array_get_logical", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".array_get_logical", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -1095,6 +1343,14 @@ implicit none (type, external)
     integer(i4) :: i
 
     validation: block
+      call error%throw_if_not ( &
+        where = module_name // ".array_get_logical", &
+        kind_type = EXCEPTION_KIND_TYPE_ERROR, &
+        message = "path has incorrect syntax", &
+        ! code = 0_i4, &
+        condition = path_is_possible_valid(path) &
+      )
+
       call error%throw_if ( &
         where = module_name // ".array_get_string", &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
@@ -1164,6 +1420,116 @@ implicit none (type, external)
 
 
 
+
+  logical function path_is_possible_valid(path) result(res)
+  implicit none (type, external)
+    character(len = *), intent(in) :: path
+
+    type(exception_type) :: error
+    type(regex_api_type), save :: regex, regex_with_braces
+    logical, save :: not_prepared = .true.
+
+    character(len = :), allocatable :: parts(:)
+
+    integer(i4) :: i
+    logical :: v
+
+    if (not_prepared) then
+      not_prepared = .false.
+      call prepare()
+    end if
+
+    if (trim(path) == "") then
+      res = .false.
+      return
+    end if
+    if (path(1_i4:1_i4) == ".") then
+      res = .false.
+      return
+    end if
+    if (path(len(path):len(path)) == ".") then
+      res = .false.
+      return
+    end if
+
+    call split_path(path, parts)
+    do i = 1, size(parts)
+      v = .false.
+      call regex%regex_match(trim(parts(i)), v, error)
+      if (v) cycle
+      call regex_with_braces%regex_match(trim(parts(i)), v, error)
+      if (v) cycle
+      exit
+    end do
+    res = v
+
+    if (error%has_thrown()) call error_assert_not( &
+      location = module_name // ".path_is_possible_valid", &
+      message = "unexpected error " // error%get_message() // " .", &
+      condition = error%has_thrown() &
+    )
+
+    contains
+    subroutine prepare()
+    implicit none (type, external)
+      ! call regex%compile_regex( &
+      !   "^(([a-zA-Z_][a-zA-Z0-9_]*)(\([123456789][0-9]*\))?\.)*" // &
+      !   "(([a-zA-Z_][a-zA-Z0-9_]*)(\([123456789][0-9]*\))?)$", &
+      !   error &
+      ! )
+      call regex%compile_regex( &
+       "^[a-zA-Z_][a-zA-Z0-9_]*$", &
+       error &
+      )
+      call regex_with_braces%compile_regex( &
+        "^[a-zA-Z_][a-zA-Z0-9_]*\([123456789][0-9]*\)$", &
+        error &
+      )
+      if (error%has_thrown()) call error_assert_not( &
+        location = module_name // ".path_is_possible_valid", &
+        message = "unexpected error " // error%get_message() // " .", &
+        condition = error%has_thrown() &
+      )
+    end subroutine prepare
+    subroutine split_path(string_path, res)
+      character(len = *), intent(in) :: string_path
+      character(len = :), allocatable, intent(out) :: res(:)
+
+      integer(i4) :: n, max_len, current_len
+
+      integer(i4) :: i
+
+      n = 1_i4
+      max_len = 0_i4
+      current_len = 0_i4
+      do i = 1_i4, len(string_path)
+        if (string_path(i:i) == ".") then
+          n = n + 1_i4
+          max_len = max(max_len, current_len)
+          current_len = 0_i4
+          cycle
+        end if
+        current_len = current_len + 1_i4
+      end do
+      max_len = max(max_len, current_len)
+
+      allocate(character(len = max_len) :: res(n))
+      res = ""
+
+      n = 1_i4
+      current_len = 0_i4
+      do i = 1_i4, len(string_path)
+        if (string_path(i:i) == ".") then
+          n = n + 1_i4
+          current_len = 0_i4
+          cycle
+        end if
+        current_len = current_len + 1_i4
+
+        res(n)(current_len:current_len) = string_path(i:i)
+      end do
+    end subroutine split_path
+  end function path_is_possible_valid
 
   subroutine check_for_common_errors(this, where, error)
   implicit none (type, external)

@@ -395,42 +395,42 @@ contains
       message = "incorrect result" &
     )
   end subroutine put_test_complicated_path
-  ! @test
-  ! subroutine put_test_incorrect1
-  ! implicit none (type, external)
-  !   type(json_api_type) :: json_api
-  !   type(exception_type) :: error
+  @test
+  subroutine put_test_incorrect1
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
 
-  !   call json_api%init(error)
-  !   call check_if_error_is_not_thrown(error)
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
 
-  !   call json_api%put("p1(-123)", 130_i4, error)
-  !   call check_if_error_is_thrown(error)
-  ! end subroutine put_test_incorrect1
-  ! @test
-  ! subroutine put_test_incorrect2
-  ! implicit none (type, external)
-  !   type(json_api_type) :: json_api
-  !   type(exception_type) :: error
+    call json_api%put("p1(-123)", 130_i4, error)
+    call check_if_error_is_thrown(error)
+  end subroutine put_test_incorrect1
+  @test
+  subroutine put_test_incorrect2
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
 
-  !   call json_api%init(error)
-  !   call check_if_error_is_not_thrown(error)
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
 
-  !   call json_api%put("=", 130_i4, error)
-  !   call check_if_error_is_thrown(error)
-  ! end subroutine put_test_incorrect2
-  ! @test
-  ! subroutine put_test_incorrect3
-  ! implicit none (type, external)
-  !   type(json_api_type) :: json_api
-  !   type(exception_type) :: error
+    call json_api%put("=", 130_i4, error)
+    call check_if_error_is_thrown(error)
+  end subroutine put_test_incorrect2
+  @test
+  subroutine put_test_incorrect3
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
 
-  !   call json_api%init(error)
-  !   call check_if_error_is_not_thrown(error)
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
 
-  !   call json_api%put("{123}", 130_i4, error)
-  !   call check_if_error_is_thrown(error)
-  ! end subroutine put_test_incorrect3
+    call json_api%put("{123}", 130_i4, error)
+    call check_if_error_is_thrown(error)
+  end subroutine put_test_incorrect3
 
   @test
   subroutine exists_test_common
@@ -551,12 +551,12 @@ contains
     call check_if_error_is_not_thrown(error)
 
     call json_api%exists("{][32482]", res, error)
-    call check_if_error_is_not_thrown(error)
-    call assertEqual(&
-      expected = .false., &
-      actual = res, &
-      message = "incorrect result" &
-    )
+    call check_if_error_is_thrown(error)
+    ! call assertEqual(&
+    !   expected = .false., &
+    !   actual = res, &
+    !   message = "incorrect result" &
+    ! )
   end subroutine exists_test_incorrect_path
 
   @test
