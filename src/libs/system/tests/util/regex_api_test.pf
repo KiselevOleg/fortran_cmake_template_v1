@@ -28,6 +28,78 @@ contains
 
 
   @test
+  subroutine regex_match_test()
+  implicit none (type, external)
+    type(regex_api_type) :: regex_api
+    type(exception_type) :: error
+
+    logical :: res
+
+    call regex_api%regex_match("str_qwe", res, error)
+    call check_if_error_is_thrown(error)
+    call error%clear()
+
+    call regex_api%compile_regex("^str_[a-z]*$", error)
+    call check_if_error_is_not_thrown(error)
+
+    call regex_api%regex_match("str_qwe", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .true., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call regex_api%regex_match("str_1", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .false., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call regex_api%regex_match("", res, error)
+    call check_if_error_is_thrown(error)
+    call error%clear()
+
+    call regex_api%compile_regex("str", error)
+    call check_if_error_is_not_thrown(error)
+
+    call regex_api%regex_match("str_qwe", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .true., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+    call regex_api%regex_match("qwe_str", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .true., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+    call regex_api%regex_match("qwe_str_qwe", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .true., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call regex_api%regex_match("ster_1", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .false., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call regex_api%regex_match("", res, error)
+    call check_if_error_is_thrown(error)
+  end subroutine regex_match_test
+
+  @test
   subroutine regex_find_first_match_test()
   implicit none (type, external)
     type(regex_api_type) :: regex_api
