@@ -1,7 +1,7 @@
 @test
 module assert_test
-use system___assert, only: error_assert, error_not_assert, &
-  warning_assert, warning_not_assert, &
+use system_exception___assert, only: error_assert, error_assert_not, &
+  warning_assert, warning_assert_not, &
   equals
 use PFUnit, only: &
   assertEqual, & ! assertEqual(expected, actual, [tolerance], [message])
@@ -12,46 +12,57 @@ use, intrinsic :: iso_fortran_env, only: sp => real32, dp => real64, qp => real1
 implicit none (type, external)
 public
 
-  character(len = *), parameter :: module_name = "system___assert_test"
+  character(len = *), parameter :: module_name = "system_exception___assert_test"
 
 contains
 
   @test
   subroutine error_assert_test_common()
   implicit none (type, external)
-    call error_assert(location = module_name // ".error_not_assert_test_common", &
+    call error_assert(location = module_name // ".error_assert_not_test_common", &
       message = "error_assert has thrown an exception incorrectly", &
       condition = 1_i1 == 0_i1 + 1_i1 &
     )
-    call error_assert(location = module_name // ".error_not_assert_test_common", &
+    call error_assert(location = module_name // ".error_assert_not_test_common", &
       message = "error_assert has thrown an exception incorrectly", &
       condition = 1_i1 > 0_i1 &
     )
-    call error_assert(location = module_name // ".error_not_assert_test_common", &
+    call error_assert(location = module_name // ".error_assert_not_test_common", &
       message = "error_assert has thrown an exception incorrectly", &
       condition = .true. &
     )
   end subroutine error_assert_test_common
   @test
-  subroutine error_not_assert_test_common()
+  subroutine error_assert_not_test_common()
   implicit none (type, external)
-    call error_not_assert(location = module_name // ".error_not_assert_test_common", &
+    call error_assert_not(location = module_name // ".error_assert_not_test_common", &
       message = "error_assert has thrown an exception incorrectly", &
       condition = 1_i1 /= 0_i1 + 1_i1 &
     )
-    call error_not_assert(location = module_name // ".error_not_assert_test_common", &
+    call error_assert_not(location = module_name // ".error_assert_not_test_common", &
       message = "error_assert has thrown an exception incorrectly", &
       condition = 1_i1 == 0_i1 &
     )
-    call error_not_assert(location = module_name // ".error_not_assert_test_common", &
+    call error_assert_not(location = module_name // ".error_assert_not_test_common", &
       message = "error_assert has thrown an exception incorrectly", &
       condition = .false. &
     )
-  end subroutine error_not_assert_test_common
+  end subroutine error_assert_not_test_common
 
   @test
   subroutine equals_test_common()
   implicit none (type, external)
+    call assertEqual(.true., equals(1.0_sp, 1.0_sp, 1e-6_sp))
+    call assertEqual(.true., equals(1.0_sp, 1.000011_sp, 1e-3_sp))
+    call assertEqual(.true., equals(1.0_sp, 1.000011_sp, 1e-4_sp))
+    call assertEqual(.false., equals(1.0_sp, 1.000011_sp, 1e-5_sp))
+
+    call assertEqual(.true., equals((1.0_sp, 1.0_sp), (1.0_sp, 1.0_sp), 1e-6_sp))
+    call assertEqual(.true., equals((1.0_sp, 1.0_sp), (1.000011_sp, 1.0_sp), 1e-3_sp))
+    call assertEqual(.true., equals((1.0_sp, 1.0_sp), (1.000011_sp, 1.0_sp), 1e-4_sp))
+    call assertEqual(.false., equals((1.0_sp, 1.0_sp), (1.000011_sp, 1.0_sp), 1e-5_sp))
+    call assertEqual(.false., equals((1.0_sp, 1.0_sp), (1.0_sp, 0.0_sp), 1e-5_sp))
+
     call assertEqual(.true., equals(1d0, 1d0, 1d-9))
     call assertEqual(.true., equals(1d0, 1.000011d0, 1d-3))
     call assertEqual(.true., equals(1d0, 1.000011d0, 1d-4))
@@ -62,6 +73,17 @@ contains
     call assertEqual(.true., equals((1d0, 1d0), (1.000011d0, 1d0), 1d-4))
     call assertEqual(.false., equals((1d0, 1d0), (1.000011d0, 1d0), 1d-5))
     call assertEqual(.false., equals((1d0, 1d0), (1d0, 0d0), 1d-5))
+
+    call assertEqual(.true., equals(1.0_qp, 1.0_qp, 1e-9_qp))
+    call assertEqual(.true., equals(1.0_qp, 1.000011_qp, 1e-3_qp))
+    call assertEqual(.true., equals(1.0_qp, 1.000011_qp, 1e-4_qp))
+    call assertEqual(.false., equals(1.0_qp, 1.000011_qp, 1e-5_qp))
+
+    call assertEqual(.true., equals((1.0_qp, 1.0_qp), (1.0_qp, 1.0_qp), 1e-9_qp))
+    call assertEqual(.true., equals((1.0_qp, 1.0_qp), (1.000011_qp, 1.0_qp), 1e-3_qp))
+    call assertEqual(.true., equals((1.0_qp, 1.0_qp), (1.000011_qp, 1.0_qp), 1e-4_qp))
+    call assertEqual(.false., equals((1.0_qp, 1.0_qp), (1.000011_qp, 1.0_qp), 1e-5_qp))
+    call assertEqual(.false., equals((1.0_qp, 1.0_qp), (1.0_qp, 0.0_qp), 1e-5_qp))
   end subroutine equals_test_common
 
 

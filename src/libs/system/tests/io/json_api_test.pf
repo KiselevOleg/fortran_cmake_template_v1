@@ -1,0 +1,1227 @@
+@test
+module json_api_test
+use system_io___json_api, only: json_api_type, &
+  JSON_TYPE_INTEGER, JSON_TYPE_REAL, JSON_TYPE_BOOLEAN, JSON_TYPE_STRING, &
+    JSON_TYPE_ARRAY, JSON_TYPE_OBJECT, JSON_TYPE_NULL, string_type
+use system_exception___exception, only: exception_type, assignment(=), &
+  EXCEPTION_KIND_TYPE_ERROR, EXCEPTION_KIND_TYPE_WARNING, EXCEPTION_KIND_TYPE_INFO, print_exception
+use PFUnit, only: &
+  assertEqual, & ! assertEqual(expected, actual, [tolerance], [message])
+  assertNotEqual, & ! assertNotEqual(expected, actual, [tolerance], [message])
+  assertTrue ! assertTrue(condition, [message])
+use, intrinsic :: iso_fortran_env, only: sp => real32, dp => real64, qp => real128, &
+  i1 => int8, i2 => int16, i4 => int32, i8 => int64
+implicit none (type, external)
+public
+  character(len = *), parameter :: module_name = "system_io___json_api_test"
+
+  character(len = *), parameter :: json_common_1 = &
+    "{" // new_line("a") // &
+    "  ""name"": ""Alex""," // new_line("a") // &
+    "  ""description"": ""JSON file example""," // new_line("a") // &
+    "  ""city"": ""Riga""," // new_line("a") // &
+    "  ""age"": 25," // new_line("a") // &
+    "  ""scores"": [" // new_line("a") // &
+    "    10," // new_line("a") // &
+    "    20," // new_line("a") // &
+    "    35," // new_line("a") // &
+    "    42," // new_line("a") // &
+    "    100" // new_line("a") // &
+    "  ]," // new_line("a") // &
+    "  ""temperature"": 0.235E+2," // new_line("a") // &
+    "  ""height"": 0.18200000000000001E+1," // new_line("a") // &
+    "  ""balance"": 0.154075E+4," // new_line("a") // &
+    "  ""isStudent"": true," // new_line("a") // &
+    "  ""isEmployed"": false," // new_line("a") // &
+    "  ""hasCar"": true," // new_line("a") // &
+    "  ""profile"": {" // new_line("a") // &
+    "    ""id"": 12345," // new_line("a") // &
+    "    ""email"": ""alex@example.com""," // new_line("a") // &
+    "    ""active"": true," // new_line("a") // &
+    "    ""skills"": [" // new_line("a") // &
+    "      ""JavaScript""," // new_line("a") // &
+    "      ""Python""," // new_line("a") // &
+    "      ""JSON""" // new_line("a") // &
+    "    ]" // new_line("a") // &
+    "  }" // new_line("a") // &
+    "}" // new_line("a")
+
+  character(len = *), parameter :: json_common_2 = &
+    "{" // new_line("a") // &
+    "  ""numbers"": [" // new_line("a") // &
+    "    1," // new_line("a") // &
+    "    2," // new_line("a") // &
+    "    3," // new_line("a") // &
+    "    4," // new_line("a") // &
+    "    5," // new_line("a") // &
+    "    6," // new_line("a") // &
+    "    7," // new_line("a") // &
+    "    8," // new_line("a") // &
+    "    9," // new_line("a") // &
+    "    10" // new_line("a") // &
+    "  ]," // new_line("a") // &
+    "  ""finished"": true," // new_line("a") // &
+    "  ""config"": {" // new_line("a") // &
+    "    ""source"": ""data_set1.hdf1""," // new_line("a") // &
+    "    ""time"": 1223" // new_line("a") // &
+    "  }" // new_line("a") // &
+    "}" // new_line("a")
+
+
+  character(len = *), parameter :: json_common_3 = &
+    "{" // new_line("a") // &
+    "  ""name"": ""Alex""," // new_line("a") // &
+    "  ""description"": ""JSON file example""," // new_line("a") // &
+    "  ""city"": ""Riga""," // new_line("a") // &
+    "  ""age"": 25," // new_line("a") // &
+    "  ""test_data"": null," // new_line("a") // &
+    "  ""scores"": [" // new_line("a") // &
+    "    10," // new_line("a") // &
+    "    20," // new_line("a") // &
+    "    35," // new_line("a") // &
+    "    42," // new_line("a") // &
+    "    100" // new_line("a") // &
+    "  ]," // new_line("a") // &
+    "  ""temperature"": 0.235E+2," // new_line("a") // &
+    "  ""height"": 0.18200000000000001E+1," // new_line("a") // &
+    "  ""balance"": 0.154075E+4," // new_line("a") // &
+    "  ""isStudent"": true," // new_line("a") // &
+    "  ""isEmployed"": false," // new_line("a") // &
+    "  ""hasCar"": true," // new_line("a") // &
+    "  ""profile"": {" // new_line("a") // &
+    "    ""id"": 12345," // new_line("a") // &
+    "    ""email"": ""alex@example.com""," // new_line("a") // &
+    "    ""active"": true," // new_line("a") // &
+    "    ""skills"": [" // new_line("a") // &
+    "      ""JavaScript""," // new_line("a") // &
+    "      ""Python""," // new_line("a") // &
+    "      ""JSON""" // new_line("a") // &
+    "    ]" // new_line("a") // &
+    "  }" // new_line("a") // &
+    "}" // new_line("a")
+
+contains
+
+  @test
+  subroutine init_test()
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+  end subroutine init_test
+
+
+  @test
+  subroutine load_from_string_test()
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%load_from_string(json_common_1, error = error)
+    call check_if_error_is_not_thrown(error)
+
+    block
+      character(len = :), allocatable :: str
+
+      call json_api%save_to_string(str, error)
+      call check_if_error_is_not_thrown(error)
+
+      call assertEqual(&
+        expected = json_common_1, &
+        found = str, &
+        message = "incorrect result" &
+      )
+    end block
+  end subroutine load_from_string_test
+  @test
+  subroutine load_from_string_test_incorrect_string()
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%load_from_string("", error = error)
+    call check_if_error_is_thrown(error)
+    call json_api%load_from_string("123", error = error)
+    call check_if_error_is_thrown(error)
+    call json_api%load_from_string("12e3wr9f8i", error = error)
+    call check_if_error_is_thrown(error)
+    call json_api%load_from_string("{a = 3, v = 3}", error = error)
+    call check_if_error_is_thrown(error)
+  end subroutine load_from_string_test_incorrect_string
+
+  @test
+  subroutine save_to_string_test()
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    integer(i4) :: i
+
+    character(len = :), allocatable :: str
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%array_put("numbers", [(int(i, i4), i = 1, 10_i4)], error)
+    call check_if_error_is_not_thrown(error)
+    call json_api%put("finished", .true., error)
+    call check_if_error_is_not_thrown(error)
+    call json_api%put("config.source", "data_set1.hdf1", error)
+    call check_if_error_is_not_thrown(error)
+    call json_api%put("config.time", 1223_i4, error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%save_to_string(str, error)
+    call check_if_error_is_not_thrown(error)
+
+    call assertEqual(&
+      expected = json_common_2, &
+      found = str, &
+      message = "incorrect result" &
+    )
+  end subroutine save_to_string_test
+  @test
+  subroutine save_to_string_test_empty_object()
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    integer(i4) :: i
+
+    character(len = :), allocatable :: str
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%save_to_string(str, error)
+    call check_if_error_is_thrown(error)
+  end subroutine save_to_string_test_empty_object
+
+  @test
+  subroutine get_test()
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    integer(i4) :: int32_v
+    real(sp) :: real32_v
+    real(dp) :: real64_v
+    logical :: boolean_v
+    character(len = :), allocatable :: string_v
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%load_from_string(json_common_1, error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%get("age", int32_v, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = 25_i4, &
+      actual = int32_v, &
+      message = "incorrect result" &
+    )
+
+    call json_api%get("age", real32_v, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = 25.0_sp, &
+      actual = real32_v, &
+      tolerance = 1.0e-5_sp, &
+      message = "incorrect result" &
+    )
+    call json_api%get("age", real64_v, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = 25.0_dp, &
+      actual = real64_v, &
+      tolerance = 1.0e-5_dp, &
+      message = "incorrect result" &
+    )
+
+    call json_api%get("profile.active", boolean_v, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .true., &
+      actual = boolean_v, &
+      message = "incorrect result" &
+    )
+    call json_api%get("isEmployed", boolean_v, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .false., &
+      actual = boolean_v, &
+      message = "incorrect result" &
+    )
+
+    call json_api%get("profile.skills(3)", string_v, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = "JSON", &
+      found = string_v, &
+      message = "incorrect result" &
+    )
+  end subroutine get_test
+  @test
+  subroutine get_test_incorrect1()
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    integer(i4) :: int32_v
+    character(len = :), allocatable :: string_v
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%load_from_string(json_common_1, error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%get("age.path", int32_v, error)
+    call check_if_error_is_thrown(error)
+  end subroutine get_test_incorrect1
+  @test
+  subroutine get_test_incorrect2()
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    integer(i4) :: int32_v
+    character(len = :), allocatable :: string_v
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%load_from_string(json_common_1, error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%get("profile.skills(10)", string_v, error)
+    call check_if_error_is_thrown(error)
+  end subroutine get_test_incorrect2
+
+  @test
+  subroutine put_test
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    integer(i4) :: int32_v
+    real(sp) :: real32_v
+    real(dp) :: real64_v
+    logical :: boolean_v
+    character(len = :), allocatable :: string_v
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%put("int32", 130_i4, error)
+    call json_api%put("real32", 1.0_sp, error)
+    call json_api%put("real64", 5.0_dp, error)
+    call json_api%put("logical", .true., error)
+    call json_api%put("string", "test_string", error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%get("int32", int32_v, error)
+    call json_api%get("real32", real32_v, error)
+    call json_api%get("real64", real64_v, error)
+    call json_api%get("logical", boolean_v, error)
+    call json_api%get("string", string_v, error)
+    call check_if_error_is_not_thrown(error)
+
+    call assertEqual(&
+      expected = 130_i4, &
+      actual = int32_v, &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = 1.0_sp, &
+      actual = real32_v, &
+      tolerance = 1.0e-5_sp, &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = 5.0_dp, &
+      actual = real64_v, &
+      tolerance = 1.0e-5_dp, &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = .true., &
+      actual = boolean_v, &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = "test_string", &
+      found = string_v, &
+      message = "incorrect result" &
+    )
+  end subroutine put_test
+  @test
+  subroutine put_test_complicated_path
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    integer(i4) :: int32_v1, int32_v2
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%put("p1.p2.p3.p4.p5", 130_i4, error)
+    call json_api%array_put("p1.p2.array", [1_i4, 2_i4, 3_i4, 5_i4], error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%get("p1.p2.p3.p4.p5", int32_v1, error)
+    call json_api%get("p1.p2.array(3)", int32_v2, error)
+    call check_if_error_is_not_thrown(error)
+
+    call assertEqual(&
+      expected = 130_i4, &
+      actual = int32_v1, &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = 3_i4, &
+      actual = int32_v2, &
+      message = "incorrect result" &
+    )
+  end subroutine put_test_complicated_path
+  @test
+  subroutine put_test_incorrect1
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%put("p1(-123)", 130_i4, error)
+    call check_if_error_is_thrown(error)
+  end subroutine put_test_incorrect1
+  @test
+  subroutine put_test_incorrect2
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%put("=", 130_i4, error)
+    call check_if_error_is_thrown(error)
+  end subroutine put_test_incorrect2
+  @test
+  subroutine put_test_incorrect3
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%put("{123}", 130_i4, error)
+    call check_if_error_is_thrown(error)
+  end subroutine put_test_incorrect3
+
+  @test
+  subroutine exists_test_common
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    logical :: res
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%load_from_string(json_common_1, error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%exists("name", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .true., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call json_api%exists("scores", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .true., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call json_api%exists("scores(2)", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .true., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call json_api%exists("scores(20)", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .false., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+
+    call json_api%exists("donot_exists", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .false., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call json_api%exists("profile", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .true., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call json_api%exists("profile.email", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .true., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call json_api%exists("profile.skills", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .true., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call json_api%exists("profile.skills(3)", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .true., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call json_api%exists("profile.skills.donot_exists", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .false., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call json_api%exists("profile.skills(13)", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .false., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+  end subroutine exists_test_common
+
+  @test
+  subroutine exists_test_incorrect_path
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    logical :: res
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%load_from_string(json_common_1, error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%exists("{][32482]", res, error)
+    call check_if_error_is_thrown(error)
+    ! call assertEqual(&
+    !   expected = .false., &
+    !   actual = res, &
+    !   message = "incorrect result" &
+    ! )
+  end subroutine exists_test_incorrect_path
+
+  @test
+  subroutine remove_test_common
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    logical :: res
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%load_from_string(json_common_1, error)
+    call check_if_error_is_not_thrown(error)
+
+    call check_for("name")
+    call check_for("scores")
+    call check_for("profile.skills")
+    call check_for("profile")
+
+    contains
+
+    subroutine check_for(path)
+    implicit none (type, external)
+      character(len = *), intent(in) :: path
+
+      call json_api%remove(path, error)
+      call check_if_error_is_not_thrown(error)
+      call json_api%exists(path, res, error)
+      call check_if_error_is_not_thrown(error)
+      call assertEqual(&
+        expected = .false., &
+        actual = res, &
+        message = "incorrect result" &
+      )
+    end subroutine check_for
+  end subroutine remove_test_common
+
+  @test
+  subroutine remove_test_incorrect_path
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    logical :: res
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%load_from_string(json_common_1, error)
+    call check_if_error_is_not_thrown(error)
+
+    call check_for("-=")
+    call check_for("12-=")
+    call check_for("profil[qw")
+
+    contains
+
+    subroutine check_for(path)
+    implicit none (type, external)
+      character(len = *), intent(in) :: path
+
+      call json_api%remove(path, error)
+      call check_if_error_is_thrown(error)
+    end subroutine check_for
+  end subroutine remove_test_incorrect_path
+
+  @test
+  subroutine get_element_type_test_common1
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    integer(i1) :: type_id
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+    call json_api%load_from_string(json_common_3, error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%get_element_type("name", type_id, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = JSON_TYPE_STRING, &
+      actual = type_id, &
+      message = "incorrect result" &
+    )
+
+    call json_api%get_element_type("age", type_id, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = JSON_TYPE_INTEGER, &
+      actual = type_id, &
+      message = "incorrect result" &
+    )
+
+    call json_api%get_element_type("height", type_id, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = JSON_TYPE_REAL, &
+      actual = type_id, &
+      message = "incorrect result" &
+    )
+
+    call json_api%get_element_type("isStudent", type_id, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = JSON_TYPE_BOOLEAN, &
+      actual = type_id, &
+      message = "incorrect result" &
+    )
+
+    call json_api%get_element_type("test_data", type_id, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = JSON_TYPE_NULL, &
+      actual = type_id, &
+      message = "incorrect result" &
+    )
+
+    call json_api%get_element_type("profile", type_id, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = JSON_TYPE_OBJECT, &
+      actual = type_id, &
+      message = "incorrect result" &
+    )
+
+    call json_api%get_element_type("profile.skills", type_id, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = JSON_TYPE_ARRAY, &
+      actual = type_id, &
+      message = "incorrect result" &
+    )
+  end subroutine get_element_type_test_common1
+
+  @test
+  subroutine get_element_type_test_common2
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    logical :: res
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+    call json_api%load_from_string(json_common_3, error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%is_string("name", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .true., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call json_api%is_integer("age", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .true., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call json_api%is_real("height", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .true., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call json_api%is_boolean("isStudent", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .true., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call json_api%is_null("test_data", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .true., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call json_api%is_object("profile", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .true., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call json_api%is_array("profile.skills", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .true., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+  end subroutine get_element_type_test_common2
+
+  @test
+  subroutine get_element_type_test_common3
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    logical :: res
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+    call json_api%load_from_string(json_common_3, error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%is_integer("name", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .false., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call json_api%is_string("age", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .false., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call json_api%is_boolean("height", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .false., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call json_api%is_real("isStudent", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .false., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call json_api%is_array("test_data", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .false., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call json_api%is_null("profile", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .false., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+
+    call json_api%is_object("profile.skills", res, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = .false., &
+      actual = res, &
+      message = "incorrect result" &
+    )
+  end subroutine get_element_type_test_common3
+
+  @test
+  subroutine get_element_type_test_incorrect_path
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    logical :: res
+    integer(i1) :: type_id
+
+    call reset()
+    call json_api%get_element_type("[1]23erwg", type_id, error)
+    call check_if_error_is_thrown(error)
+
+    call reset()
+    call json_api%is_integer("[1]23erwg", res, error)
+    call check_if_error_is_thrown(error)
+
+    call reset()
+    call json_api%is_string("[1]23erwg", res, error)
+    call check_if_error_is_thrown(error)
+
+    call reset()
+    call json_api%is_boolean("[1]23erwg", res, error)
+    call check_if_error_is_thrown(error)
+
+    call reset()
+    call json_api%is_real("[1]23erwg", res, error)
+    call check_if_error_is_thrown(error)
+
+    call reset()
+    call json_api%is_array("[1]23erwg", res, error)
+    call check_if_error_is_thrown(error)
+
+    call reset()
+    call json_api%is_null("[1]23erwg", res, error)
+    call check_if_error_is_thrown(error)
+
+    call reset()
+    call json_api%is_object("[1]23erwg", res, error)
+    call check_if_error_is_thrown(error)
+
+    contains
+    subroutine reset()
+    implicit none (type, external)
+      call error%clear()
+      call json_api%clear()
+
+      call json_api%init(error)
+      call check_if_error_is_not_thrown(error)
+      call json_api%load_from_string(json_common_3, error)
+      call check_if_error_is_not_thrown(error)
+    end subroutine reset
+  end subroutine get_element_type_test_incorrect_path
+
+  @test
+  subroutine array_put_append_get_test_common_int32
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    integer(i4), allocatable :: values(:)
+    integer(i4), parameter :: v1 = 1_i4
+    integer(i4), parameter :: v2 = 2_i4
+    integer(i4), parameter :: v3 = 3_i4
+    integer(i4), parameter :: v_add = 5_i4
+    integer(i4) :: size_v
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+    call json_api%load_from_string(json_common_3, error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%array_put("array_test_1", [v1, v2, v3], error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%array_get("array_test_1", values, error)
+    call check_if_error_is_not_thrown(error)
+    call json_api%array_get_size("array_test_1", size_v, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = 3_i4, &
+      actual = size_v, &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = 3_i4, &
+      actual = size(values), &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = v1, &
+      actual = values(1), &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = v2, &
+      actual = values(2), &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = v3, &
+      actual = values(3), &
+      message = "incorrect result" &
+    )
+  end subroutine array_put_append_get_test_common_int32
+
+  @test
+  subroutine array_put_append_get_test_common_real32
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    real(sp), allocatable :: values(:)
+    real(sp), parameter :: v1 = 1.0_sp
+    real(sp), parameter :: v2 = 2.0_sp
+    real(sp), parameter :: v3 = 3.0_sp
+    real(sp), parameter :: v_add = 5.0_sp
+    integer(i4) :: size_v
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+    call json_api%load_from_string(json_common_3, error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%array_put("array_test_1", [v1, v2, v3], error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%array_get("array_test_1", values, error)
+    call check_if_error_is_not_thrown(error)
+    call json_api%array_get_size("array_test_1", size_v, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = 3_i4, &
+      actual = size_v, &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = 3_i4, &
+      actual = size(values), &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = v1, &
+      actual = values(1), &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = v2, &
+      actual = values(2), &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = v3, &
+      actual = values(3), &
+      message = "incorrect result" &
+    )
+  end subroutine array_put_append_get_test_common_real32
+
+  @test
+  subroutine array_put_append_get_test_common_real64
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    real(dp), allocatable :: values(:)
+    real(dp), parameter :: v1 = 1.0_dp
+    real(dp), parameter :: v2 = 2.0_dp
+    real(dp), parameter :: v3 = 3.0_dp
+    real(dp), parameter :: v_add = 5.0_dp
+    integer(i4) :: size_v
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+    call json_api%load_from_string(json_common_3, error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%array_put("array_test_1", [v1, v2, v3], error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%array_get("array_test_1", values, error)
+    call check_if_error_is_not_thrown(error)
+    call json_api%array_get_size("array_test_1", size_v, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = 3_i4, &
+      actual = size_v, &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = 3_i4, &
+      actual = size(values), &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = v1, &
+      actual = values(1), &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = v2, &
+      actual = values(2), &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = v3, &
+      actual = values(3), &
+      message = "incorrect result" &
+    )
+  end subroutine array_put_append_get_test_common_real64
+
+  @test
+  subroutine array_put_append_get_test_common_logical
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    logical, allocatable :: values(:)
+    logical, parameter :: v1 = .true.
+    logical, parameter :: v2 = .false.
+    logical, parameter :: v3 = .true.
+    logical, parameter :: v_add = .true.
+    integer(i4) :: size_v
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+    call json_api%load_from_string(json_common_3, error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%array_put("array_test_1", [v1, v2, v3], error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%array_get("array_test_1", values, error)
+    call check_if_error_is_not_thrown(error)
+    call json_api%array_get_size("array_test_1", size_v, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = 3_i4, &
+      actual = size_v, &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = 3_i4, &
+      actual = size(values), &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = v1, &
+      actual = values(1), &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = v2, &
+      actual = values(2), &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = v3, &
+      actual = values(3), &
+      message = "incorrect result" &
+    )
+  end subroutine array_put_append_get_test_common_logical
+
+  @test
+  subroutine array_put_append_get_test_common_string
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    type(string_type), allocatable :: values(:)
+    character(len = *), parameter :: v1 = "string_1_test_123"
+    character(len = *), parameter :: v2 = "string_2_test_12"
+    character(len = *), parameter :: v3 = "string_3_test_1"
+    character(len = *), parameter :: v_add = "string_4_test_12345"
+    integer(i4) :: size_v
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+    call json_api%load_from_string(json_common_3, error)
+    call check_if_error_is_not_thrown(error)
+
+    allocate(values(3))
+    values(1)%data = v1
+    values(2)%data = v2
+    values(3)%data = v3
+    call json_api%array_put("array_test_1", values, error)
+    deallocate(values)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%array_get("array_test_1", values, error)
+    call check_if_error_is_not_thrown(error)
+    call json_api%array_get_size("array_test_1", size_v, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = 3_i4, &
+      actual = size_v, &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = 3_i4, &
+      actual = size(values), &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = v1, &
+      found = values(1)%data, &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = v2, &
+      found = values(2)%data, &
+      message = "incorrect result" &
+    )
+    call assertEqual(&
+      expected = v3, &
+      found = values(3)%data, &
+      message = "incorrect result" &
+    )
+  end subroutine array_put_append_get_test_common_string
+
+  @test
+  subroutine clear_test
+  implicit none (type, external)
+    type(json_api_type) :: json_api
+    type(exception_type) :: error
+
+    call json_api%init(error)
+    call check_if_error_is_not_thrown(error)
+    call json_api%load_from_string(json_common_3, error)
+    call check_if_error_is_not_thrown(error)
+
+    call json_api%clear()
+    call json_api%clear()
+    call json_api%clear()
+    call json_api%clear()
+    call json_api%clear()
+    call json_api%clear()
+    call json_api%clear()
+    call json_api%clear()
+    call json_api%clear()
+    call json_api%clear()
+    call json_api%clear()
+  end subroutine clear_test
+
+
+
+
+
+
+
+
+  subroutine check_if_error_is_not_thrown(error)
+  implicit none (type, external)
+    type(exception_type), intent(in) :: error
+
+    if (error%has_thrown()) then
+      call print_exception(error)
+    end if
+    call assertTrue(.not. error%has_thrown())
+  end subroutine check_if_error_is_not_thrown
+  subroutine check_if_error_is_thrown(error)
+  implicit none (type, external)
+    type(exception_type), intent(in) :: error
+
+    if (error%has_thrown()) then
+      call print_exception(error)
+    end if
+    call assertTrue(error%has_thrown())
+  end subroutine check_if_error_is_thrown
+
+
+
+
+
+
+
+
+
+
+  @before
+  subroutine BeforeAll()
+  implicit none (type, external)
+    print *, "srart tests"
+  end subroutine BeforeAll
+
+  @after
+  subroutine AfterAll()
+  implicit none (type, external)
+    print *, "end tests"
+  end subroutine AfterAll
+end module json_api_test

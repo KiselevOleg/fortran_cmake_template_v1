@@ -24,17 +24,17 @@ private
     complex(dp) :: start_point
     complex(dp) :: end_point
   contains
-    procedure(projection_function_obj_type), deferred, pass :: projection_function
-    procedure(normalized_delta_obj_type), deferred, pass :: normalized_delta
-    procedure(start_projection_point_type), deferred, pass :: start_projection_point
-    procedure(end_projection_point_type), deferred, pass :: end_projection_point
+    procedure(projection_function_obj_type), deferred, pass(this) :: projection_function
+    procedure(normalized_delta_obj_type), deferred, pass(this) :: normalized_delta
+    procedure(start_projection_point_type), deferred, pass(this) :: start_projection_point
+    procedure(end_projection_point_type), deferred, pass(this) :: end_projection_point
 
-    procedure(set_boundary_points_preparate_type), private, deferred, pass :: &
+    procedure(set_boundary_points_preparate_type), private, deferred, pass(this) :: &
       set_boundary_points_preparate
 
-    procedure, pass :: set_boundary_points
-    procedure, pass :: get_start_point
-    procedure, pass :: get_end_point
+    procedure, pass(this) :: set_boundary_points
+    procedure, pass(this) :: get_start_point
+    procedure, pass(this) :: get_end_point
   end type integration_path_part_obj
 
   abstract interface

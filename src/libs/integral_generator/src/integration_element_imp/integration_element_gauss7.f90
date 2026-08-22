@@ -18,7 +18,7 @@ private
   type, extends(integration_element_obj) :: integration_element_gauss7_obj
   private
   contains
-    procedure, pass :: run => run
+    procedure, pass(this) :: run => run
   end type integration_element_gauss7_obj
 
   interface

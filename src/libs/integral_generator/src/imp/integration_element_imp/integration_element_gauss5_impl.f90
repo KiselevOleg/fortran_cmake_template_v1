@@ -1,6 +1,6 @@
 submodule(integration_element_gauss5) integration_element_gauss5_impl
-use system___assert, only: error_assert, error_not_assert, &
-  warning_assert, warning_not_assert, &
+use system_exception___assert, only: error_assert, error_assert_not, &
+  warning_assert, warning_assert_not, &
   equals
 implicit none (type, external)
 

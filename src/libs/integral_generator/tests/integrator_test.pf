@@ -49,7 +49,7 @@ contains
         template_recalculation(), &
         element_gauss6() &
       )
-      call builder%set_accuration(1d-3)
+      call builder%set_accuracy(1d-3)
       integrator = builder%build()
     end block
 
@@ -72,7 +72,7 @@ contains
   end subroutine integrator_test_create_simple_single_part
 
   @test
-  subroutine integrator_test_create_simple_single_part_accuration_element()
+  subroutine integrator_test_create_simple_single_part_accuracy_element()
   implicit none (type, external)
     type(integrator_obj) :: integrator
     type(integrator_builder_obj) :: builder
@@ -133,7 +133,7 @@ contains
         call builder%set_boundary_points(a(i), b(i))
 
         do j = 1, eps_size
-          call builder%set_accuration(eps(j))
+          call builder%set_accuracy(eps(j))
           integrator = builder%build()
 
           call assertEqual(&
@@ -182,10 +182,10 @@ contains
 
       res = x ** 7 / 16d0
     end function func_pol
-  end subroutine integrator_test_create_simple_single_part_accuration_element
+  end subroutine integrator_test_create_simple_single_part_accuracy_element
 
   @test
-  subroutine integrator_test_create_complex_single_part_accuration_element()
+  subroutine integrator_test_create_complex_single_part_accuracy_element()
   implicit none (type, external)
     type(integrator_obj) :: integrator
     type(integrator_builder_obj) :: builder
@@ -258,7 +258,7 @@ contains
         call builder%set_boundary_points(a(i), b(i))
 
         do j = 1, eps_size
-          call builder%set_accuration(eps(j))
+          call builder%set_accuracy(eps(j))
           integrator = builder%build()
 
           call assertEqual(&
@@ -321,7 +321,7 @@ contains
 
       res = cos(x)
     end function func_cos
-  end subroutine integrator_test_create_complex_single_part_accuration_element
+  end subroutine integrator_test_create_complex_single_part_accuracy_element
 
   @test
   subroutine integrator_test_circle_paths()
@@ -340,7 +340,7 @@ contains
         template_recalculation(), &
         element_gauss6() &
       )
-      call builder%set_accuration(eps)
+      call builder%set_accuracy(eps)
 
       call builder%set_boundary_points( &
         builder%last_start((- 1d0, - 1d0)), builder%last_end((1d0, - 1d0)) &
@@ -469,7 +469,7 @@ contains
           template_recalculation(), &
           element_gauss6() &
         )
-        call builder%set_accuration(eps)
+        call builder%set_accuracy(eps)
 
         call builder%set_boundary_points( &
           builder%last_start((- 1d0, - 1d0) * radius(i)), &
@@ -565,7 +565,7 @@ contains
         template_recalculation(), &
         element_gauss3() &
       )
-      call builder%set_accuration(eps)
+      call builder%set_accuracy(eps)
       integrator_inner = builder%build()
       integrator_outer = builder%build()
     end block
@@ -714,7 +714,7 @@ contains
       call builder%add_new_path_part( &
         path_part_parallel_Re(builder%last_end(), 45d0) &
       )
-      call builder%set_accuration(eps)
+      call builder%set_accuracy(eps)
       integrator_outer = builder%build()
     end block
     block
@@ -727,7 +727,7 @@ contains
         template_recalculation(), &
         element_gauss3() &
       )
-      call builder%set_accuration(eps)
+      call builder%set_accuracy(eps)
       integrator_inner = builder%build()
     end block
 
@@ -865,7 +865,7 @@ contains
           template_recalculation(), &
           element_gauss6() &
         )
-        call builder%set_accuration(eps)
+        call builder%set_accuracy(eps)
 
         call builder%set_boundary_points( &
           builder%last_start((0d0, - 1d0) * radius(i)), &
@@ -952,7 +952,7 @@ contains
         template_recalculation(), &
         element_gauss6() &
       )
-      call builder%set_accuration(1d-3)
+      call builder%set_accuracy(1d-3)
       integrator = builder%build()
     end block
 

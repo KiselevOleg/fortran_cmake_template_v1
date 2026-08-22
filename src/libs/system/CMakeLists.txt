@@ -5,14 +5,26 @@
 set(LIBRARY_NAME "system")
 
 set(SRC_FILES
-  src/assert.f90
-  src/imp/assert_impl.f90
-  src/dynamic_array.f90
-  src/imp/dynamic_array_impl.f90
+  src/exception/assert.f90
+  src/exception/imp/assert_impl.f90
+  src/exception/exception.f90
+  src/exception/imp/exception_impl.f90
+  src/io/json_api.f90
+  src/io/imp/json_api_impl.f90
+  src/io/hdf5_api.f90
+  src/io/imp/hdf5_api_impl.f90
+  src/util/regex_api.f90
+  src/util/imp/regex_api_impl.f90
+  src/util/dynamic_array.f90
+  src/util/imp/dynamic_array_impl.f90
 )
 
-include(../../../cmake/for_libraries/generate_library_with_namespace.cmake)
+include(../../../cmake/for_libraries/generate_library_with_package.cmake)
 
-if(ENABLE_TESTS)
+target_link_libraries(${LIBRARY_NAME} PRIVATE jsonfortran)
+target_link_libraries(${LIBRARY_NAME} PRIVATE h5fortran)
+target_link_libraries(${LIBRARY_NAME} PRIVATE fortran_regex)
+
+if (ENABLE_TESTS)
   add_subdirectory(tests)
-endif()
+endif ()

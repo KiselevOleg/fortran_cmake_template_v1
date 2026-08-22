@@ -6,7 +6,7 @@ set(DEFAULT_PFUNIT_PATH "${CMAKE_SOURCE_DIR}/external_dependencies/pFUnit/build/
 list(INSERT CMAKE_PREFIX_PATH 0 "${DEFAULT_PFUNIT_PATH}")
 message(STATUS "CMAKE_PREFIX_PATH = ${CMAKE_PREFIX_PATH}")
 
-if(ENABLE_TESTS)
+if (ENABLE_TESTS)
   find_package(PFUNIT REQUIRED)
   message(STATUS "PFUnit_DIR = ${PFUNIT_DIR}")
   enable_testing()
@@ -19,4 +19,4 @@ if(ENABLE_TESTS)
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMENT "Run tests with verbose output"
   )
-endif()
+endif ()

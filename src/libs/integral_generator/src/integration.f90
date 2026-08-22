@@ -35,7 +35,7 @@
 !>        template_recalculation(), &
 !>        element_gauss6() &
 !>      )
-!>      call builder%set_accuration(1d-3)
+!>      call builder%set_accuracy(1d-3)
 !>      integrator = builder%build()
 !>    end block
 !>
@@ -77,7 +77,7 @@
 !>      call builder%add_new_path_part( &
 !>        path_part_parallel_Re(builder%last_end(), 45d0) &
 !>      )
-!>      call builder%set_accuration(eps)
+!>      call builder%set_accuracy(eps)
 !>      integrator_outer = builder%build()
 !>    end block
 !>    block
@@ -90,7 +90,7 @@
 !>        template_recalculation(), &
 !>        element_gauss3() &
 !>      )
-!>      call builder%set_accuration(eps)
+!>      call builder%set_accuracy(eps)
 !>      integrator_inner = builder%build()
 !>    end block
 !>

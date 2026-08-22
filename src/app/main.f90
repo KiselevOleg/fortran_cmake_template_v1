@@ -2,6 +2,7 @@ program main
 use static_library_1___math, only:max_new, min_new
 use static_library_1___functions, only:abs_x, neg_x
 use json_module, only:json_file
+use h5fortran, only : hdf5_file
 use, intrinsic :: iso_fortran_env, only: sp => real32, dp => real64, qp => real128, &
   i1 => int8, i2 => int16, i4 => int32, i8 => int64
 implicit none (type, external)
@@ -104,6 +105,42 @@ implicit none (type, external)
   end block
   block
     call execute_command_line("rm -f output.json")
+  end block
+
+  block
+    type(hdf5_file) :: h
+
+    real(dp), allocatable :: x(:), y(:)
+    integer(i4) :: i
+
+    allocate(x(100), y(100))
+
+    ! call h%open('test.h5', 'rw')
+    call h%open(filename = "test.h5", action = "w")
+    call h%write("/t", 123_i4)
+    print *, "real kind =", kind(x)
+    print *, "real size =", storage_size(x(1))
+    call h%write("/x", [(real(i, dp) * 0.1_dp, i = 1, 100)])
+    call h%write("/y", [(sin(real(i, dp)) * 0.1_dp, i = 1, 100)])
+    call h%create_group("/particles")
+    call h%create_group("/particles1")
+    call h%write("/particles/x", [(real(i, dp) * 0.1_dp, i = 1, 100)])
+    call h%write("/particles/y", [(sin(real(i, dp)) * 0.1_dp, i = 1, 100)])
+    call h%write("/particles2/x", [(real(i, dp) * 0.1_dp, i = 1, 100)])
+    call h%write("/particles2/y", [(sin(real(i, dp)) * 0.1_dp, i = 1, 100)])
+    call h%close()
+
+    call h%open("test.h5", "r")
+    print *, h%exist("/x")
+    call h%read("/x", x)
+    call h%read("/y", y)
+    call h%close()
+
+    print *, x(1:5)
+    print *, y(1:5)
+    print *, minval(y)
+
+    call execute_command_line("rm -f test.h5")
   end block
 
   ! call test()

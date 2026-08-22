@@ -2,7 +2,7 @@
 # LINT
 # ==========================================================
 
-if(ENABLE_STATIC_ANALYSIS)
+if (ENABLE_STATIC_ANALYSIS)
     add_custom_target(lint_Fortitude_linter_f90
         COMMAND ${CMAKE_COMMAND} -E env
             PATH=${CMAKE_SOURCE_DIR}/external_dependencies/Fortitude/Fortitude_environment/bin:$ENV{PATH}
@@ -32,4 +32,4 @@ if(ENABLE_STATIC_ANALYSIS)
         lint_Fortitude_linter_pf
         lint_Fortran_linter
     )
-endif()
+endif ()

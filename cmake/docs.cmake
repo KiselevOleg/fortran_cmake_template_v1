@@ -13,7 +13,7 @@ add_custom_target(project_docs
 
 #find_package(Doxygen)
 #
-#if(Doxygen_FOUND)
+#if (Doxygen_FOUND)
 #  set(DOXYGEN_GENERATE_HTML YES)
 #  set(DOXYGEN_GENERATE_MAN NO)
 #  set(OPTIMIZE_FOR_FORTRAN YES)
@@ -24,4 +24,4 @@ add_custom_target(project_docs
 #    #${PROJECT_SOURCE_DIR}
 #    ALL
 #  )
-#endif()
+#endif ()

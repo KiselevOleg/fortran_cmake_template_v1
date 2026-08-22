@@ -1,0 +1,547 @@
+@test
+module hdf5_api_test
+use system_io___hdf5_api, only: hdf5_api_type, &
+  OPEN_FILE_TYPE_WRITE, OPEN_FILE_TYPE_READ, OPEN_FILE_TYPE_WRITE_READ, string_type
+use system_exception___exception, only: exception_type, assignment(=), &
+  EXCEPTION_KIND_TYPE_ERROR, EXCEPTION_KIND_TYPE_WARNING, EXCEPTION_KIND_TYPE_INFO, print_exception
+use PFUnit, only: &
+  assertEqual, & ! assertEqual(expected, actual, [tolerance], [message])
+  assertNotEqual, & ! assertNotEqual(expected, actual, [tolerance], [message])
+  assertTrue ! assertTrue(condition, [message])
+use, intrinsic :: iso_fortran_env, only: sp => real32, dp => real64, qp => real128, &
+  i1 => int8, i2 => int16, i4 => int32, i8 => int64
+implicit none (type, external)
+public
+  character(len = *), parameter :: module_name = "system_io___hdf5_api_test"
+
+  ! character(len = *), parameter :: test_file_name = "build/scr/libs/system/tests/io/test_hdf5.h5"
+  character(len = *), parameter :: test_file_name = "test_hdf5.h5"
+contains
+
+
+
+! block
+!     type(hdf5_file) :: h
+
+!     real(dp), allocatable :: x(:), y(:)
+!     integer(i4) :: i
+
+!     allocate(x(100), y(100))
+
+!     ! call h%open('test.h5', 'rw')
+!     call h%open(filename = "test.h5", action = "w")
+!     call h%write("/t", 123_i4)
+!     print *, "real kind =", kind(x)
+!     print *, "real size =", storage_size(x(1))
+!     call h%write("/x", [(real(i, dp) * 0.1_dp, i = 1, 100)])
+!     call h%write("/y", [(sin(real(i, dp)) * 0.1_dp, i = 1, 100)])
+!     call h%create_group("/particles")
+!     call h%create_group("/particles1")
+!     call h%write("/particles/x", [(real(i, dp) * 0.1_dp, i = 1, 100)])
+!     call h%write("/particles/y", [(sin(real(i, dp)) * 0.1_dp, i = 1, 100)])
+!     call h%write("/particles2/x", [(real(i, dp) * 0.1_dp, i = 1, 100)])
+!     call h%write("/particles2/y", [(sin(real(i, dp)) * 0.1_dp, i = 1, 100)])
+!     call h%close()
+
+!     call h%open("test.h5", "r")
+!     print *, h%exist("/x")
+!     call h%read("/x", x)
+!     call h%read("/y", y)
+!     call h%close()
+
+!     print *, x(1:5)
+!     print *, y(1:5)
+!     print *, minval(y)
+
+!     call execute_command_line("rm -f test.h5")
+!   end block
+
+
+
+
+
+
+  @test
+  subroutine init_test()
+  implicit none (type, external)
+    type(hdf5_api_type) :: hdf5_api
+    type(exception_type) :: error
+
+    call hdf5_api%init(error)
+    call check_if_error_is_not_thrown(error)
+  end subroutine init_test
+  @test
+  subroutine create_close_file_test()
+  implicit none (type, external)
+    type(hdf5_api_type) :: hdf5_api
+    type(exception_type) :: error
+
+    integer(i4) :: data_int32(35, 26, 36)
+    integer(i8) :: data_int64(30)
+    real(sp) :: data_real32(3, 5, 7, 8, 5)
+    real(dp) :: data_real64(3,5, 200)
+
+    integer(i4) :: attribute_int32
+    integer(i8) :: attribute_int64
+    real(sp) :: attribute_real32
+    real(dp) :: attribute_real64
+    character(len = :), allocatable :: attribute_string
+
+    real(sp) :: attribute_int32_array(1)
+    real(dp) :: attribute_int64_array(2, 3, 4, 7, 3)
+    real(sp) :: attribute_real32_array(2, 3)
+    real(dp) :: attribute_real64_array(2, 3, 4)
+
+    data_int32 = 1_i4
+    data_int64 = 2_i8
+    data_real32 = 3.0_sp
+    data_real64 = 4.0_qp
+
+    attribute_int32 = 3_i4
+    attribute_int64 = 4_i8
+    attribute_real32 = 5.0_sp
+    attribute_real64 = 6.0_dp
+    attribute_string = "test"
+
+    attribute_int32_array = 7_i4
+    attribute_int64_array = 8_i8
+    attribute_real32_array = 9.0_sp
+    attribute_real64_array = 10.0_dp
+
+    block
+      call hdf5_api%init(error)
+      call hdf5_api%open_file( &
+        !test_file_name, OPEN_FILE_TYPE_WRITE_READ, error &
+        test_file_name, OPEN_FILE_TYPE_WRITE, error &
+        !test_file_name, OPEN_FILE_TYPE_READ, error &
+      )
+      call check_if_error_is_not_thrown(error)
+
+      call hdf5_api%dataset_put("dataset_test.int32", data_int32, error)
+      call hdf5_api%dataset_put("dataset_test.int64", data_int64, error)
+      call hdf5_api%dataset_put("dataset_test.real32", data_real32, error)
+      call hdf5_api%dataset_put("dataset_test.real64", data_real64, error)
+
+      call hdf5_api%attribute_put("dataset_test", "attribute_int32", attribute_int32, error)
+      call hdf5_api%attribute_put("dataset_test", "attribute_int64", attribute_int64, error)
+      call hdf5_api%attribute_put("dataset_test", "attribute_real32", attribute_real32, error)
+      call hdf5_api%attribute_put("dataset_test", "attribute_real64", attribute_real64, error)
+      call hdf5_api%attribute_put("dataset_test", "attribute_string", attribute_string, error)
+
+      call hdf5_api%attribute_put("dataset_test", "attribute_int32_array", &
+        attribute_int32_array, error)
+      call hdf5_api%attribute_put("dataset_test", "attribute_int64_array", &
+        attribute_int64_array, error)
+      call hdf5_api%attribute_put("dataset_test", "attribute_real32_array", &
+        attribute_real32_array, error)
+      call hdf5_api%attribute_put("dataset_test", "attribute_real64_array", &
+        attribute_real64_array, error)
+
+      call hdf5_api%object_create_group("test_group.test_group.test", error)
+
+      call hdf5_api%clear()
+    end block
+    call check_if_error_is_not_thrown(error)
+
+    block
+      integer(i4), allocatable :: data_int32_(:, :, :)
+      integer(i8), allocatable :: data_int64_(:)
+      real(sp), allocatable :: data_real32_(:, :, :, :, :)
+      real(dp), allocatable :: data_real64_(:,:, :)
+
+      integer(i8), allocatable :: data_int32_shape_(:)
+      integer(i8), allocatable :: data_int64_shape_(:)
+      integer(i8), allocatable :: data_real32_shape_(:)
+      integer(i8), allocatable :: data_real64_shape_(:)
+
+      integer(i4) :: data_int32_rank_
+      integer(i4) :: data_int64_rank_
+      integer(i4) :: data_real32_rank_
+      integer(i4) :: data_real64_rank_
+
+      integer(i4) :: attribute_int32_
+      integer(i8) :: attribute_int64_
+      real(sp) :: attribute_real32_
+      real(dp) :: attribute_real64_
+      character(len = :), allocatable :: attribute_string_
+
+      integer(i4), allocatable :: attribute_int32_array_(:)
+      integer(i8), allocatable :: attribute_int64_array_(:, :, :, :, :)
+      real(sp), allocatable :: attribute_real32_array_(:, :)
+      real(dp), allocatable :: attribute_real64_array_(:, :, :)
+
+      logical :: attribute_int32_exists_
+      logical :: attribute_int64_exists_
+      logical :: attribute_real32_exists_
+      logical :: attribute_real64_exists_
+      logical :: attribute_string_exists_
+      logical :: attribute_none_exists_
+
+      logical :: attribute_int32_array_exists_
+      logical :: attribute_int64_array_exists_
+      logical :: attribute_real32_array_exists_
+      logical :: attribute_real64_array_exists_
+
+      logical :: object_exists_test_group_
+      logical :: object_exists_test_dataset_
+      logical :: object_exists_none_
+
+      call hdf5_api%init(error)
+      call hdf5_api%open_file( &
+        !test_file_name, OPEN_FILE_TYPE_WRITE_READ, error &
+        !test_file_name, OPEN_FILE_TYPE_WRITE, error &
+        test_file_name, OPEN_FILE_TYPE_READ, error &
+      )
+      call check_if_error_is_not_thrown(error)
+
+      call hdf5_api%dataset_get("dataset_test.int32", data_int32_, error)
+      call hdf5_api%dataset_get("dataset_test.int64", data_int64_, error)
+      call hdf5_api%dataset_get("dataset_test.real32", data_real32_, error)
+      call hdf5_api%dataset_get("dataset_test.real64", data_real64_, error)
+
+      call hdf5_api%dataset_get_shape("dataset_test.int32", data_int32_shape_, error)
+      call hdf5_api%dataset_get_shape("dataset_test.int64", data_int64_shape_, error)
+      call hdf5_api%dataset_get_shape("dataset_test.real32", data_real32_shape_, error)
+      call hdf5_api%dataset_get_shape("dataset_test.real64", data_real64_shape_, error)
+
+      call hdf5_api%dataset_get_rank("dataset_test.int32", data_int32_rank_, error)
+      call hdf5_api%dataset_get_rank("dataset_test.int64", data_int64_rank_, error)
+      call hdf5_api%dataset_get_rank("dataset_test.real32", data_real32_rank_, error)
+      call hdf5_api%dataset_get_rank("dataset_test.real64", data_real64_rank_, error)
+
+      call hdf5_api%attribute_get("dataset_test", "attribute_int32", attribute_int32_, error)
+      call hdf5_api%attribute_get("dataset_test", "attribute_int64", attribute_int64_, error)
+      call hdf5_api%attribute_get("dataset_test", "attribute_real32", attribute_real32_, error)
+      call hdf5_api%attribute_get("dataset_test", "attribute_real64", attribute_real64_, error)
+      call hdf5_api%attribute_get("dataset_test", "attribute_string", attribute_string_, error)
+
+      call hdf5_api%attribute_get_array("dataset_test", "attribute_int32_array", &
+        attribute_int32_array_, error)
+      call hdf5_api%attribute_get_array("dataset_test", "attribute_int64_array", &
+        attribute_int64_array_, error)
+      call hdf5_api%attribute_get_array("dataset_test", "attribute_real32_array", &
+        attribute_real32_array_, error)
+      call hdf5_api%attribute_get_array("dataset_test", "attribute_real64_array", &
+        attribute_real64_array_, error)
+
+      call hdf5_api%attribute_exists("dataset_test", "attribute_int32", &
+        attribute_int32_exists_, error)
+      call hdf5_api%attribute_exists("dataset_test", "attribute_int64", &
+        attribute_int64_exists_, error)
+      call hdf5_api%attribute_exists("dataset_test", "attribute_real32", &
+        attribute_real32_exists_, error)
+      call hdf5_api%attribute_exists("dataset_test", "attribute_real64", &
+        attribute_real64_exists_, error)
+      call hdf5_api%attribute_exists("dataset_test", "attribute_string", &
+        attribute_string_exists_, error)
+      call hdf5_api%attribute_exists("dataset_test", "attribute_null", &
+        attribute_none_exists_, error)
+
+      call hdf5_api%attribute_exists("dataset_test", "attribute_int32_array", &
+        attribute_int32_array_exists_, error)
+      call hdf5_api%attribute_exists("dataset_test", "attribute_int64_array", &
+        attribute_int64_array_exists_, error)
+      call hdf5_api%attribute_exists("dataset_test", "attribute_real32_array", &
+        attribute_real32_array_exists_, error)
+      call hdf5_api%attribute_exists("dataset_test", "attribute_real64_array", &
+        attribute_real64_array_exists_, error)
+
+      call hdf5_api%object_exists("test_group.test_group.test", object_exists_test_group_, error)
+      call hdf5_api%object_exists("dataset_test", object_exists_test_dataset_, error)
+      call hdf5_api%object_exists("test", object_exists_none_, error)
+
+      call hdf5_api%clear()
+
+      call assertTrue(&
+        condition = &
+          allocated(data_int32_) .and. &
+          all(shape(data_int32) == shape(data_int32_)) .and. &
+          all(data_int32 == data_int32_), &
+        message = "incorrect result" &
+      )
+      call assertTrue(&
+        condition = &
+          allocated(data_int64_) .and. &
+          all(shape(data_int64) == shape(data_int64_)) .and. &
+          all(data_int64 == data_int64_), &
+        message = "incorrect result" &
+      )
+      call assertTrue(&
+        condition = &
+          allocated(data_real32_) .and. &
+          all(shape(data_real32) == shape(data_real32_)) .and. &
+          all(data_real32 == data_real32_), &
+        message = "incorrect result" &
+      )
+      call assertTrue(&
+        condition = &
+          allocated(data_real64_) .and. &
+          all(shape(data_real64) == shape(data_real64_)) .and. &
+          all(data_real64 == data_real64_), &
+        message = "incorrect result" &
+      )
+
+      call assertTrue(&
+        condition = &
+          allocated(data_int32_shape_) .and. &
+          all(shape(shape(data_int32)) == shape(data_int32_shape_)) .and. &
+          all(shape(data_int32) == data_int32_shape_), &
+        message = "incorrect result" &
+      )
+      call assertTrue(&
+        condition = &
+          allocated(data_int64_shape_) .and. &
+          all(shape(shape(data_int64)) == shape(data_int64_shape_)) .and. &
+          all(shape(data_int64) == data_int64_shape_), &
+        message = "incorrect result" &
+      )
+      call assertTrue(&
+        condition = &
+          allocated(data_real32_shape_) .and. &
+          all(shape(shape(data_real32)) == shape(data_real32_shape_)) .and. &
+          all(shape(data_real32) == data_real32_shape_), &
+        message = "incorrect result" &
+      )
+      call assertTrue(&
+        condition = &
+          allocated(data_real64_shape_) .and. &
+          all(shape(shape(data_real64)) == shape(data_real64_shape_)) .and. &
+          all(shape(data_real64) == data_real64_shape_), &
+        message = "incorrect result" &
+      )
+
+      call assertEqual(&
+        expected = rank(data_int32), &
+        actual = data_int32_rank_, &
+        message = "incorrect result" &
+      )
+      call assertEqual(&
+        expected = rank(data_int64), &
+        actual = data_int64_rank_, &
+        message = "incorrect result" &
+      )
+      call assertEqual(&
+        expected = rank(data_real32), &
+        actual = data_real32_rank_, &
+        message = "incorrect result" &
+      )
+      call assertEqual(&
+        expected = rank(data_real64), &
+        actual = data_real64_rank_, &
+        message = "incorrect result" &
+      )
+
+      call assertEqual(&
+        expected = attribute_int32, &
+        actual = attribute_int32_, &
+        message = "incorrect result" &
+      )
+      call assertEqual(&
+        expected = attribute_int64, &
+        actual = attribute_int64_, &
+        message = "incorrect result" &
+      )
+      call assertEqual(&
+        expected = attribute_real32, &
+        actual = attribute_real32_, &
+        message = "incorrect result" &
+      )
+      call assertEqual(&
+        expected = attribute_real64, &
+        actual = attribute_real64_, &
+        message = "incorrect result" &
+      )
+      call assertEqual(&
+        expected = attribute_string, &
+        found = attribute_string_, &
+        message = "incorrect result" &
+      )
+
+      call assertTrue(&
+        condition = &
+          allocated(attribute_int32_array_) .and. &
+          all(shape(attribute_int32_array) == shape(attribute_int32_array_)) .and. &
+          all(attribute_int32_array == attribute_int32_array_), &
+        message = "incorrect result" &
+      )
+      call assertTrue(&
+        condition = &
+          allocated(attribute_int64_array_) .and. &
+          all(shape(attribute_int64_array) == shape(attribute_int64_array_)) .and. &
+          all(attribute_int64_array == attribute_int64_array_), &
+        message = "incorrect result" &
+      )
+      call assertTrue(&
+        condition = &
+          allocated(attribute_real32_array_) .and. &
+          all(shape(attribute_real32_array) == shape(attribute_real32_array_)) .and. &
+          all(attribute_real32_array == attribute_real32_array_), &
+        message = "incorrect result" &
+      )
+      call assertTrue(&
+        condition = &
+          allocated(attribute_real64_array_) .and. &
+          all(shape(attribute_real64_array) == shape(attribute_real64_array_)) .and. &
+          all(attribute_real64_array == attribute_real64_array_), &
+        message = "incorrect result" &
+      )
+
+      call assertEqual(&
+        expected = .true., &
+        actual = attribute_int32_exists_, &
+        message = "incorrect result" &
+      )
+      call assertEqual(&
+        expected = .true., &
+        actual = attribute_int64_exists_, &
+        message = "incorrect result" &
+      )
+      call assertEqual(&
+        expected = .true., &
+        actual = attribute_real32_exists_, &
+        message = "incorrect result" &
+      )
+      call assertEqual(&
+        expected = .true., &
+        actual = attribute_real64_exists_, &
+        message = "incorrect result" &
+      )
+      call assertEqual(&
+        expected = .true., &
+        actual = attribute_string_exists_, &
+        message = "incorrect result" &
+      )
+      call assertEqual(&
+        expected = .false., &
+        actual = attribute_none_exists_, &
+        message = "incorrect result" &
+      )
+
+      call assertEqual(&
+        expected = .true., &
+        actual = attribute_int32_array_exists_, &
+        message = "incorrect result" &
+      )
+      call assertEqual(&
+        expected = .true., &
+        actual = attribute_int64_array_exists_, &
+        message = "incorrect result" &
+      )
+      call assertEqual(&
+        expected = .true., &
+        actual = attribute_real32_array_exists_, &
+        message = "incorrect result" &
+      )
+      call assertEqual(&
+        expected = .true., &
+        actual = attribute_real64_array_exists_, &
+        message = "incorrect result" &
+      )
+
+      call assertEqual(&
+        expected = .true., &
+        actual = object_exists_test_group_, &
+        message = "incorrect result" &
+      )
+      call assertEqual(&
+        expected = .true., &
+        actual = object_exists_test_dataset_, &
+        message = "incorrect result" &
+      )
+      call assertEqual(&
+        expected = .false., &
+        actual = object_exists_none_, &
+        message = "incorrect result" &
+      )
+    end block
+    call check_if_error_is_not_thrown(error)
+
+    block
+      integer(i4) :: attribute_int32_
+      integer(i4), allocatable :: attribute_int32_array_(:)
+
+      call hdf5_api%init(error)
+      call hdf5_api%open_file( &
+        test_file_name, OPEN_FILE_TYPE_WRITE_READ, error &
+        !test_file_name, OPEN_FILE_TYPE_WRITE, error &
+        !test_file_name, OPEN_FILE_TYPE_READ, error &
+      )
+      call check_if_error_is_not_thrown(error)
+
+      call hdf5_api%attribute_put("dataset_test", "attribute_int32_additional", &
+        attribute_int32, error)
+      call hdf5_api%attribute_put("dataset_test", "attribute_int32_array_additional", &
+        attribute_int32_array, error)
+
+      call hdf5_api%attribute_get("dataset_test", "attribute_int32_additional", &
+        attribute_int32_, error)
+      call hdf5_api%attribute_get_array("dataset_test", "attribute_int32_array_additional", &
+        attribute_int32_array_, error)
+      call check_if_error_is_not_thrown(error)
+
+      ! call hdf5_api%attribute_remove("dataset_test", "attribute_int32_additional", error)
+      ! call hdf5_api%attribute_remove("dataset_test", "attribute_int32_array_additional", error)
+      ! call check_if_error_is_not_thrown(error)
+
+      call hdf5_api%attribute_get("dataset_test", "attribute_int32_additional", &
+        attribute_int32_, error)
+      call hdf5_api%attribute_get_array("dataset_test", "attribute_int32_array_additional", &
+        attribute_int32_array_, error)
+      ! call check_if_error_is_thrown(error)
+      ! call error%clear()
+      ! call error%init()
+
+      call hdf5_api%clear()
+    end block
+    call check_if_error_is_not_thrown(error)
+  end subroutine create_close_file_test
+
+
+
+
+
+  subroutine check_if_error_is_not_thrown(error)
+  implicit none (type, external)
+    type(exception_type), intent(in) :: error
+
+    if (error%has_thrown()) then
+      call print_exception(error)
+    end if
+    call assertTrue(.not. error%has_thrown())
+  end subroutine check_if_error_is_not_thrown
+  subroutine check_if_error_is_thrown(error)
+  implicit none (type, external)
+    type(exception_type), intent(in) :: error
+
+    if (error%has_thrown()) then
+      call print_exception(error)
+    end if
+    call assertTrue(error%has_thrown())
+  end subroutine check_if_error_is_thrown
+
+
+
+
+
+  @before
+  subroutine BeforeAll()
+  implicit none (type, external)
+    print *, "srart tests"
+
+    block
+      logical :: exists
+
+      inquire(file=test_file_name, exist=exists)
+
+      if (exists) then
+        call execute_command_line("rm -f " // test_file_name)
+      end if
+    end block
+  end subroutine BeforeAll
+
+  @after
+  subroutine AfterAll()
+  implicit none (type, external)
+    print *, "end tests"
+  end subroutine AfterAll
+end module hdf5_api_test

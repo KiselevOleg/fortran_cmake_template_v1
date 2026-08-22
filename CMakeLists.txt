@@ -42,14 +42,14 @@ option(ENABLE_TESTS "Build tests" ON)
 # cmake_minimum_required(VERSION 4.2.2)
 cmake_minimum_required(VERSION 3.24)
 
-if(NOT CMAKE_Fortran_COMPILER)
+if (NOT CMAKE_Fortran_COMPILER)
   find_program(CMAKE_Fortran_COMPILER gfortran)
-endif()
-project(test_fortran LANGUAGES Fortran)
+endif ()
+project(test_fortran LANGUAGES Fortran C)
 
-if(NOT DEFINED CMAKE_BUILD_TYPE)
+if (NOT DEFINED CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Release | Debug" FORCE)
-endif()
+endif ()
 
 
 # ==========================================================

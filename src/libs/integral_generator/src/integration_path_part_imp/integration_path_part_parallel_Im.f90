@@ -20,12 +20,12 @@ private
   type, extends(integration_path_part_obj) :: integration_path_part_parallel_Im_obj
   private
   contains
-    procedure, pass :: projection_function => projection_function_obj
-    procedure, pass :: normalized_delta => normalized_delta_obj
-    procedure, pass :: start_projection_point => start_projection_point
-    procedure, pass :: end_projection_point => end_projection_point
+    procedure, pass(this) :: projection_function => projection_function_obj
+    procedure, pass(this) :: normalized_delta => normalized_delta_obj
+    procedure, pass(this) :: start_projection_point => start_projection_point
+    procedure, pass(this) :: end_projection_point => end_projection_point
 
-    procedure, private, pass :: set_boundary_points_preparate => set_boundary_points_preparate
+    procedure, private, pass(this) :: set_boundary_points_preparate => set_boundary_points_preparate
   end type integration_path_part_parallel_Im_obj
 
   interface

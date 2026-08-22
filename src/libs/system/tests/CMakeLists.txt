@@ -3,13 +3,36 @@
 # ==========================================================
 
 add_pfunit_ctest(assert_test
-  TEST_SOURCES assert_test.pf
+  TEST_SOURCES exception/assert_test.pf
+  LINK_LIBRARIES
+    ${LIBRARY_NAME}
+)
+
+add_pfunit_ctest(exception_test
+  TEST_SOURCES exception/exception_test.pf
+  LINK_LIBRARIES
+    ${LIBRARY_NAME}
+)
+
+add_pfunit_ctest(json_api_test
+  TEST_SOURCES io/json_api_test.pf
+  LINK_LIBRARIES
+    ${LIBRARY_NAME}
+)
+add_pfunit_ctest(hdf5_api_test
+  TEST_SOURCES io/hdf5_api_test.pf
+  LINK_LIBRARIES
+    ${LIBRARY_NAME}
+)
+
+add_pfunit_ctest(regex_api_test
+  TEST_SOURCES util/regex_api_test.pf
   LINK_LIBRARIES
     ${LIBRARY_NAME}
 )
 
 add_pfunit_ctest(dynamic_array_test
-  TEST_SOURCES dynamic_array_test.pf
+  TEST_SOURCES util/dynamic_array_test.pf
   LINK_LIBRARIES
     ${LIBRARY_NAME}
 )
