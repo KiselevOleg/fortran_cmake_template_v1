@@ -11,6 +11,8 @@ set(SRC_FILES
   src/exception/imp/exception_impl.f90
   src/io/json_api.f90
   src/io/imp/json_api_impl.f90
+  src/io/hdf5_api.f90
+  src/io/imp/hdf5_api_impl.f90
   src/util/regex_api.f90
   src/util/imp/regex_api_impl.f90
   src/util/dynamic_array.f90
@@ -20,6 +22,7 @@ set(SRC_FILES
 include(../../../cmake/for_libraries/generate_library_with_package.cmake)
 
 target_link_libraries(${LIBRARY_NAME} PRIVATE jsonfortran)
+target_link_libraries(${LIBRARY_NAME} PRIVATE h5fortran)
 target_link_libraries(${LIBRARY_NAME} PRIVATE fortran_regex)
 
 if (ENABLE_TESTS)

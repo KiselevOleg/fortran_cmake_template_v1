@@ -19,6 +19,11 @@ add_pfunit_ctest(json_api_test
   LINK_LIBRARIES
     ${LIBRARY_NAME}
 )
+add_pfunit_ctest(hdf5_api_test
+  TEST_SOURCES io/hdf5_api_test.pf
+  LINK_LIBRARIES
+    ${LIBRARY_NAME}
+)
 
 add_pfunit_ctest(regex_api_test
   TEST_SOURCES util/regex_api_test.pf

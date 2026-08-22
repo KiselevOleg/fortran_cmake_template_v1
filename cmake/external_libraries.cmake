@@ -88,7 +88,8 @@ find_package(ZLIB REQUIRED)
 
 find_package(HDF5 CONFIG REQUIRED COMPONENTS Fortran HL)
 
-add_library(h5fortran STATIC IMPORTED GLOBAL)
+# add_library(h5fortran STATIC IMPORTED GLOBAL)
+add_library(h5fortran STATIC IMPORTED)
 set_target_properties(h5fortran PROPERTIES
   IMPORTED_LOCATION
     "${CMAKE_SOURCE_DIR}/external_dependencies/h5fortran/build/libh5fortran.a"
@@ -117,8 +118,6 @@ set_target_properties(fortran_regex PROPERTIES
     "${CMAKE_SOURCE_DIR}/external_dependencies/fortran-regex/build/release/lib/libfortran-regex.a"
   INTERFACE_INCLUDE_DIRECTORIES
     "${CMAKE_SOURCE_DIR}/external_dependencies/fortran-regex/build/release/include"
-  INTERFACE_LINK_LIBRARIES
-    "h5fortran;hdf5_hl_fortran-static"
 )
 
 file(COPY
