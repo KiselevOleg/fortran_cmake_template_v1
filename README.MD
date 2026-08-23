@@ -324,7 +324,7 @@ pip install fortls
 fortls --version
 which fortls
 
-# for coplime some external dependencies (may be usefull)
+# for coplime some external dependencies (may be useful)
 pip install fpm
 fpm --version
 which fpm
