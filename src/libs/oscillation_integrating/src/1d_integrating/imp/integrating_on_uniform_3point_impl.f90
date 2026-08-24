@@ -130,8 +130,7 @@ implicit none (type, external)
         this%x(i) = x
       end do
 
-      !call h%close_file(error)
-      call h%clear()
+      call h%close_file(error)
       if (error%has_thrown()) return
     end block
   end procedure init_from_file
@@ -214,8 +213,7 @@ implicit none (type, external)
 
       call h%dataset_put(path = "f_data.x", value = this%x, error = error)
 
-      !call h%close_file(error)
-      call h%clear()
+      call h%close_file(error)
 
       if (error%has_thrown()) return
     end block
