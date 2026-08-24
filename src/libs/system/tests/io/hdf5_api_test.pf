@@ -496,6 +496,81 @@ contains
     call check_if_error_is_not_thrown(error)
   end subroutine create_close_file_test
 
+  @test
+  subroutine close_file_test()
+  implicit none (type, external)
+    type(hdf5_api_type) :: hdf5_api
+    type(exception_type) :: error
+
+    integer(i4) :: data_int32(35, 26, 36)
+    integer(i8) :: data_int64(30)
+    real(sp) :: data_real32(3, 5, 7, 8, 5)
+    real(dp) :: data_real64(3,5, 200)
+
+    integer(i4) :: attribute_int32
+    integer(i8) :: attribute_int64
+    real(sp) :: attribute_real32
+    real(dp) :: attribute_real64
+    character(len = :), allocatable :: attribute_string
+
+    real(sp) :: attribute_int32_array(1)
+    real(dp) :: attribute_int64_array(2, 3, 4, 7, 3)
+    real(sp) :: attribute_real32_array(2, 3)
+    real(dp) :: attribute_real64_array(2, 3, 4)
+
+    data_int32 = 1_i4
+    data_int64 = 2_i8
+    data_real32 = 3.0_sp
+    data_real64 = 4.0_qp
+
+    attribute_int32 = 3_i4
+    attribute_int64 = 4_i8
+    attribute_real32 = 5.0_sp
+    attribute_real64 = 6.0_dp
+    attribute_string = "test"
+
+    attribute_int32_array = 7_i4
+    attribute_int64_array = 8_i8
+    attribute_real32_array = 9.0_sp
+    attribute_real64_array = 10.0_dp
+
+    block
+      call hdf5_api%init(error)
+      call hdf5_api%open_file( &
+        !test_file_name, OPEN_FILE_TYPE_WRITE_READ, error &
+        test_file_name, OPEN_FILE_TYPE_WRITE, error &
+        !test_file_name, OPEN_FILE_TYPE_READ, error &
+      )
+      call check_if_error_is_not_thrown(error)
+
+      call hdf5_api%dataset_put("dataset_test.int32", data_int32, error)
+      call hdf5_api%dataset_put("dataset_test.int64", data_int64, error)
+      call hdf5_api%dataset_put("dataset_test.real32", data_real32, error)
+      call hdf5_api%dataset_put("dataset_test.real64", data_real64, error)
+
+      call hdf5_api%attribute_put("dataset_test", "attribute_int32", attribute_int32, error)
+      call hdf5_api%attribute_put("dataset_test", "attribute_int64", attribute_int64, error)
+      call hdf5_api%attribute_put("dataset_test", "attribute_real32", attribute_real32, error)
+      call hdf5_api%attribute_put("dataset_test", "attribute_real64", attribute_real64, error)
+      call hdf5_api%attribute_put("dataset_test", "attribute_string", attribute_string, error)
+
+      call hdf5_api%attribute_put("dataset_test", "attribute_int32_array", &
+        attribute_int32_array, error)
+      call hdf5_api%attribute_put("dataset_test", "attribute_int64_array", &
+        attribute_int64_array, error)
+      call hdf5_api%attribute_put("dataset_test", "attribute_real32_array", &
+        attribute_real32_array, error)
+      call hdf5_api%attribute_put("dataset_test", "attribute_real64_array", &
+        attribute_real64_array, error)
+
+      call hdf5_api%object_create_group("test_group.test_group.test", error)
+
+      call hdf5_api%close_file(error)
+      !call hdf5_api%clear()
+    end block
+    call check_if_error_is_not_thrown(error)
+  end subroutine close_file_test
+
 
 
 

@@ -55,7 +55,10 @@ implicit none (type, external)
       if (error%has_thrown()) return
     end block validation
 
+    if (this%open_file_type == - 1_i1) return
+
     call this%hdf5_impl%close()
+    this%open_file_type = - 1_i1
   end procedure close_file
 
   module procedure attribute_get_int8
