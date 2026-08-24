@@ -11,7 +11,7 @@ set(SRC_FILES
 
 include(../../../cmake/for_libraries/generate_library_with_namespace.cmake)
 set(PREPARE_SCRIPT_FILE "prepare.sh")
-include(../../../cmake/for_libraries/add_prepare_script_to_library.cmake)
+include(../../../cmake/for_libraries/add_build_level_prepare_script_to_library.cmake)
 set(ADDITIONAL_DEPENDENCY_NAME "${LIBRARY_NAME}_Error_Fns_Dawson_Intgrl_Cmplx")
 set(ADDITIONAL_DEPENDENCY_STATIC_LIBRARY_FILE
   "${CMAKE_SOURCE_DIR}/external_dependencies/Error_Fns_Dawson_Intgrl_Cmplx/build/libfaddeyeva.a"

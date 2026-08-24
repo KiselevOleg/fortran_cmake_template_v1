@@ -1,5 +1,5 @@
 # ==========================================================
-# RUN EXECUTABLE SCIPT EACH TIME BEFORE BUILD LIBRARY
+# RUN EXECUTABLE SCIPT EACH TIME BEFORE COMPILE LIBRARY
 # ==========================================================
 
 add_custom_target(${LIBRARY_NAME}_prepare

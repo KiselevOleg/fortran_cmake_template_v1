@@ -23,6 +23,6 @@ gfortran -shared -o libfaddeyeva.so *.o
 mkdir include
 cp *.mod include/
 
-cd ..
+cd ../..
 
 cd ../src/libs/oscillation_integrating
