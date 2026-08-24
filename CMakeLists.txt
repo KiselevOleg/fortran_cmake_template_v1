@@ -70,5 +70,6 @@ include(cmake/external_libraries.cmake)
 
 add_subdirectory(src/libs/system)
 add_subdirectory(src/libs/integral_generator)
+add_subdirectory(src/libs/oscillation_integrating)
 add_subdirectory(src/libs/static_library_1)
 add_subdirectory(src/app)

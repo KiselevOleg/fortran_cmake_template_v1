@@ -1,0 +1,361 @@
+@test
+module integrating_on_uniform_3point_test
+use oscillation_integrating___integrating_on_uniform_3point, only: &
+  filon_like_integrating_uniform_3points_type
+use system_exception___exception, only: exception_type, assignment(=), &
+  EXCEPTION_KIND_TYPE_ERROR, EXCEPTION_KIND_TYPE_WARNING, EXCEPTION_KIND_TYPE_INFO, print_exception
+use PFUnit, only: &
+  assertEqual, & ! assertEqual(expected, actual, [tolerance], [message])
+  assertNotEqual, & ! assertNotEqual(expected, actual, [tolerance], [message])
+  assertTrue ! assertTrue(condition, [message])
+use, intrinsic :: iso_fortran_env, only: sp => real32, dp => real64, qp => real128, &
+  i1 => int8, i2 => int16, i4 => int32, i8 => int64
+implicit none (type, external)
+public
+  character(len = *), parameter :: module_name = &
+    "oscillation_integration___integrating_on_uniform_3point_test"
+
+  character(len = *), parameter :: test_file_name = "qwe_test_hdf5.h5"
+
+  complex(dp), parameter :: ci = (0.0_dp, 1.0_dp)
+
+  abstract interface
+    pure complex(dp) function f_template(x) result(res)
+    import :: dp
+    implicit none (type, external)
+      real(dp), intent(in) :: x
+    end function f_template
+    pure complex(dp) function res_for_f_template(x, omega) result(res)
+    import :: dp
+    implicit none (type, external)
+      real(dp), intent(in) :: x
+      real(dp), intent(in) :: omega
+    end function res_for_f_template
+  end interface
+contains
+
+  @test
+  subroutine integrate_test()
+  implicit none (type, external)
+    type(filon_like_integrating_uniform_3points_type) :: integrator
+    type(exception_type) :: error
+
+    integer(i4) :: a_i, b_i, omega_i, N_i, f_i
+    integer(i4) :: N
+    real(dp) :: a, b, omega, eps
+
+    integer(i4) :: N_i_min
+
+    procedure(f_template), pointer :: f
+    procedure(res_for_f_template), pointer :: res_for_f
+
+    do f_i = 1_i4, 8_i4
+      select case (f_i)
+      case (1_i4)
+        eps = 1e-9_dp
+        f => f1
+        res_for_f => res_for_f1
+      case (2_i4)
+        eps = 1e-9_dp
+        f => f2
+        res_for_f => res_for_f2
+      case (3_i4)
+        eps = 1e-6_dp
+        f => f3
+        res_for_f => res_for_f3
+      ! case (4_i4)
+      !   eps = 1e-6_dp
+      !   f => f4
+      !   res_for_f => res_for_f4
+      case (5_i4)
+        eps = 5e-2_dp
+        f => f5
+        res_for_f => res_for_f5
+      case (6_i4)
+        eps = 1e-3_dp
+        f => f6
+        res_for_f => res_for_f6
+      case (7_i4)
+        eps = 1e-4_dp
+        f => f7
+        res_for_f => res_for_f7
+      case (8_i4)
+        eps = 1e-3_dp
+        f => f8
+        res_for_f => res_for_f8
+      case default
+        cycle
+      end select
+
+      N_i_min = 1_i4
+      if (f_i > 2_i4) N_i_min = 3_i4
+      do a_i = - 20_i4, 20_i4, 2_i4
+        do b_i = a_i + 1_i4, 20_i4, 2_i4
+          do omega_i = 1_i4, 9_i4, 2_i4
+            do N_i = N_i_min, 3_i4
+              a = real(a_i, dp)
+              b = real(b_i, dp)
+              N = 10_i4 ** N_i
+              omega = 10.0_dp ** omega_i
+
+              call check( &
+                f = f, res_for_f = res_for_f, &
+                a = a, b = b, N = N, &
+                omega = omega, &
+                eps = eps &
+              )
+            end do
+          end do
+        end do
+      end do
+    end do
+
+    call check_if_error_is_not_thrown(error)
+
+    contains
+
+    subroutine check(f, res_for_f, a, b, N, omega, eps)
+    !implicit none (type, external)
+    ! allow(C003)
+    implicit none (type)
+      procedure(f_template) :: f
+      procedure(res_for_f_template) :: res_for_f
+      real(dp), intent(in) :: a
+      real(dp), intent(in) :: b
+      integer(i4), intent(in) :: N
+      real(dp), intent(in) :: omega
+      real(dp), intent(in) :: eps
+
+      call integrator%init(f, a, b, N, error)
+      call check_if_error_is_not_thrown(error)
+      call assertEqual(&
+        expected = res_for_f(b, omega) - res_for_f(a, omega), &
+        actual = integrator%integrate(omega), &
+        tolerance = eps, &
+        message = "incorrect result" &
+      )
+    end subroutine check
+  end subroutine integrate_test
+  @test
+  subroutine create_close_file_test()
+  implicit none (type, external)
+    type(filon_like_integrating_uniform_3points_type) :: integrator
+    type(exception_type) :: error
+
+    block
+      type(filon_like_integrating_uniform_3points_type) :: h
+      call h%init(f = f6, a = 1.0_dp, b = 3.0_dp, N = 500_i4, error = error)
+      call h%save_to_file(test_file_name, error)
+      call check_if_error_is_not_thrown(error)
+    end block
+
+    call integrator%init(test_file_name, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = &
+        res_for_f6(x = 3.0_dp, omega = 100.0_dp) - res_for_f6(x = 1.0_dp, omega = 100.0_dp), &
+      actual = integrator%integrate(omega = 100.0_dp), &
+      tolerance = 1e-9_dp, &
+      message = "incorrect result" &
+    )
+
+    call check_if_error_is_not_thrown(error)
+  end subroutine create_close_file_test
+
+
+
+
+
+  pure complex(dp) function f1(x) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: x
+
+    res = 1.0_dp
+  end function f1
+  pure complex(dp) function f2(x) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: x
+
+    res = x + 1.0_dp
+  end function f2
+  pure complex(dp) function f3(x) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: x
+
+    res = cos(x)
+  end function f3
+  pure complex(dp) function f4(x) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: x
+
+    res = exp(- x) * x * sqrt(abs(x))
+  end function f4
+  pure complex(dp) function f5(x) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: x
+
+    res = exp(- x * x)
+  end function f5
+  pure complex(dp) function f6(x) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: x
+
+    res = x ** 2.0_dp * (1.0_dp - x) ** 2.0_dp
+  end function f6
+  pure complex(dp) function f7(x) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: x
+
+    res = exp(- 100.0_dp * (x - 0.5_dp) ** 2_i4)
+  end function f7
+  pure complex(dp) function f8(x) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: x
+
+    res = sin(x * 11.0_dp)
+  end function f8
+
+  ! antiderivatives of the functions
+  ! \int f(x) * e^{i \omega x} dx = res_for_f(x, omega)
+  pure complex(dp) function res_for_f1(x, omega) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: x
+    real(dp), intent(in) :: omega
+
+    res = - ci * exp (ci * omega * x) / omega
+  end function res_for_f1
+  pure complex(dp) function res_for_f2(x, omega) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: x
+    real(dp), intent(in) :: omega
+
+    res = - ci * (omega * x + omega + ci) * exp(ci * omega * x) / omega / omega
+  end function res_for_f2
+  pure complex(dp) function res_for_f3(x, omega) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: x
+    real(dp), intent(in) :: omega
+
+    res = exp(ci * omega * x) * (sin(x) + ci * omega * cos(x)) / (1.0_dp - omega * omega)
+  end function res_for_f3
+  pure complex(dp) function res_for_f4(x, omega) result(res)
+  use set_rk, only: sp_rk => sp, dp_rk => dp, qp_rk => qp
+  use faddeyeva_v3_mod_rk, only: faddeyeva_v3_rk, erfc_z, erf_z, erfi_z, erfcx_z, Dawson_z
+  implicit none (type, external)
+    real(dp), intent(in) :: x
+    real(dp), intent(in) :: omega
+
+    res = &
+      ( &
+        x * ( &
+          2.0_dp * sqrt(ci * omega - 1.0_dp) * sqrt(x) * &
+            (2.0_dp * (ci * omega - 1.0_dp) * x - 3.0_dp) * exp((ci * omega - 1.0_dp) * x) + &
+          3.0_dp * sqrt(3.14159265358979_dp) * &
+            erfi_z(z = sqrt(ci * omega - 1.0_dp) * sqrt(x), sdgts = dp_rk) &
+        ) &
+      ) / &
+      ( &
+        4.0_dp * (ci * omega - 1.0_dp) ** (5.0_dp / 2.0_dp) * abs(x) &
+      )
+
+    if (res /= res) res = 0.0_dp
+  end function res_for_f4
+  pure complex(dp) function res_for_f5(x, omega) result(res)
+  use set_rk, only: sp_rk => sp, dp_rk => dp, qp_rk => qp
+  use faddeyeva_v3_mod_rk, only: faddeyeva_v3_rk, erfc_z, erf_z, erfi_z, erfcx_z, Dawson_z
+  implicit none (type, external)
+    real(dp), intent(in) :: x
+    real(dp), intent(in) :: omega
+
+    res = sqrt(3.13159265358979_dp) * exp(- omega * omega * 0.25_dp) &
+      * erf_z(z = x - ci * omega * 0.5_dp, sdgts = dp_rk) * 0.5_dp
+
+    if (res /= res) res = 0.0_dp
+  end function res_for_f5
+  pure complex(dp) function res_for_f6(x, omega) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: x
+    real(dp), intent(in) :: omega
+
+    res = ci * omega ** 4.0_dp * x ** 4.0_dp + &
+      (- 2.0_dp * ci * omega ** 4.0_dp - 4.0_dp * omega ** 3.0_dp) * x ** 3.0_dp + &
+      (ci * omega ** 4.0_dp + 6.0_dp * omega ** 3.0_dp - 12.0_dp * ci * omega ** 2.0_dp) &
+        * x ** 2.0_dp + &
+      ( &
+        - 2.0_dp * omega ** 3.0_dp + 12.0_dp * ci * omega ** 2.0_dp + 24.0_dp * omega &
+      ) * x &
+      - 2.0_dp * ci * omega ** 2.0_dp - 12.0_dp * omega + 24.0_dp * ci
+
+    res = - res * exp(ci * omega * x) / omega ** 5.0_dp
+  end function res_for_f6
+  pure complex(dp) function res_for_f7(x, omega) result(res)
+  use set_rk, only: sp_rk => sp, dp_rk => dp, qp_rk => qp
+  use faddeyeva_v3_mod_rk, only: faddeyeva_v3_rk, erfc_z, erf_z, erfi_z, erfcx_z, Dawson_z
+  implicit none (type, external)
+    real(dp), intent(in) :: x
+    real(dp), intent(in) :: omega
+
+    res = sqrt(3.14159265358979_dp) * exp((- ci * omega - 100.0_dp) ** 2.0_dp / 400.0_dp - 25.0_dp)
+    res = res * erf_z(z = 10.0_dp * x + (- ci * omega - 100.0_dp) / 20.0_dp, sdgts = dp_rk)
+    res = res / 20.0_dp
+
+    if (res /= res) res = 0.0_dp
+  end function res_for_f7
+  pure complex(dp) function res_for_f8(x, omega) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: x
+    real(dp), intent(in) :: omega
+
+    res = exp(ci * omega * x) * (ci * omega * sin(11.0_dp * x) - 11.0_dp * cos(11.0_dp * x))
+    res = res / (121.0_dp - omega * omega)
+  end function res_for_f8
+
+
+
+
+
+  subroutine check_if_error_is_not_thrown(error)
+  implicit none (type, external)
+    type(exception_type), intent(in) :: error
+
+    if (error%has_thrown()) then
+      call print_exception(error)
+    end if
+    call assertTrue(.not. error%has_thrown())
+  end subroutine check_if_error_is_not_thrown
+  subroutine check_if_error_is_thrown(error)
+  implicit none (type, external)
+    type(exception_type), intent(in) :: error
+
+    if (error%has_thrown()) then
+      call print_exception(error)
+    end if
+    call assertTrue(error%has_thrown())
+  end subroutine check_if_error_is_thrown
+
+
+
+
+
+  @before
+  subroutine BeforeAll()
+  implicit none (type, external)
+    print *, "srart tests"
+
+    block
+      logical :: exists
+
+      inquire(file = test_file_name, exist = exists)
+
+      if (exists) then
+        call execute_command_line("rm -f " // test_file_name)
+      end if
+    end block
+  end subroutine BeforeAll
+
+  @after
+  subroutine AfterAll()
+  implicit none (type, external)
+    print *, "end tests"
+  end subroutine AfterAll
+end module integrating_on_uniform_3point_test
