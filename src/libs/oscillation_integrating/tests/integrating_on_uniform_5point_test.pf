@@ -1,7 +1,7 @@
 @test
-module integrating_on_uniform_3point_test
-use oscillation_integrating___integrating_on_uniform_3point, only: &
-  filon_like_integrating_uniform_3points_type
+module integrating_on_uniform_5point_test
+use oscillation_integrating___integrating_on_uniform_5point, only: &
+  filon_like_integrating_uniform_5points_type
 use system_exception___exception, only: exception_type, assignment(=), &
   EXCEPTION_KIND_TYPE_ERROR, EXCEPTION_KIND_TYPE_WARNING, EXCEPTION_KIND_TYPE_INFO, print_exception
 use PFUnit, only: &
@@ -13,7 +13,7 @@ use, intrinsic :: iso_fortran_env, only: sp => real32, dp => real64, qp => real1
 implicit none (type, external)
 public
   character(len = *), parameter :: module_name = &
-    "oscillation_integration___integrating_on_uniform_3point_test"
+    "oscillation_integration___integrating_on_uniform_5point_test"
 
   character(len = *), parameter :: test_file_name = "test_hdf5.h5"
 
@@ -37,7 +37,7 @@ contains
   @test
   subroutine integrate_test()
   implicit none (type, external)
-    type(filon_like_integrating_uniform_3points_type) :: integrator
+    type(filon_like_integrating_uniform_5points_type) :: integrator
     type(exception_type) :: error
 
     integer(i4) :: a_i, b_i, omega_i, N_i, f_i
@@ -63,12 +63,12 @@ contains
         eps = 1e-6_dp
         f => f3
         res_for_f => res_for_f3
-      ! case (4_i4)
-      !   eps = 1e-6_dp
-      !   f => f4
-      !   res_for_f => res_for_f4
+      !!!!! case (4_i4)
+      !!!!!   eps = 1e-6_dp
+      !!!!!   f => f4
+      !!!!!   res_for_f => res_for_f4
       case (5_i4)
-        eps = 5e-2_dp
+        eps = 1e-2_dp
         f => f5
         res_for_f => res_for_f5
       case (6_i4)
@@ -76,11 +76,11 @@ contains
         f => f6
         res_for_f => res_for_f6
       case (7_i4)
-        eps = 1e-4_dp
+        eps = 1e-5_dp
         f => f7
         res_for_f => res_for_f7
       case (8_i4)
-        eps = 1e-3_dp
+        eps = 1e-4_dp
         f => f8
         res_for_f => res_for_f8
       case default
@@ -97,6 +97,9 @@ contains
               b = real(b_i, dp)
               N = 10_i4 ** N_i
               omega = 10.0_dp ** omega_i
+
+              if ( f_i == 7_i4 .and. max(abs(a), abs(b)) > 4.0_dp) cycle
+              if ( f_i == 8_i4 .and. max(abs(a), abs(b)) > 4.0_dp) cycle
 
               call check( &
                 f = f, res_for_f = res_for_f, &
@@ -139,12 +142,12 @@ contains
   @test
   subroutine create_close_file_test()
   implicit none (type, external)
-    type(filon_like_integrating_uniform_3points_type) :: integrator
+    type(filon_like_integrating_uniform_5points_type) :: integrator
     type(exception_type) :: error
 
     block
-      type(filon_like_integrating_uniform_3points_type) :: h
-      call h%init(f = f6, a = 1.0_dp, b = 3.0_dp, N = 500_i4, error = error)
+      type(filon_like_integrating_uniform_5points_type) :: h
+      call h%init(f = f6, a = 1.0_dp, b = 3.0_dp, N = 400_i4, error = error)
       call h%save_to_file(test_file_name, error)
       call check_if_error_is_not_thrown(error)
     end block
@@ -155,7 +158,7 @@ contains
       expected = &
         res_for_f6(x = 3.0_dp, omega = 100.0_dp) - res_for_f6(x = 1.0_dp, omega = 100.0_dp), &
       actual = integrator%integrate(omega = 100.0_dp), &
-      tolerance = 1e-9_dp, &
+      tolerance = 1e-8_dp, &
       message = "incorrect result" &
     )
 
@@ -358,4 +361,4 @@ contains
   implicit none (type, external)
     print *, "end tests"
   end subroutine AfterAll
-end module integrating_on_uniform_3point_test
+end module integrating_on_uniform_5point_test

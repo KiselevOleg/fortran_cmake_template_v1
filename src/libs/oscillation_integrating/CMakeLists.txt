@@ -7,6 +7,9 @@ set(LIBRARY_NAME "oscillation_integrating")
 set(SRC_FILES
   src/1d_integrating/integrating_on_uniform_3point.f90
   src/1d_integrating/imp/integrating_on_uniform_3point_impl.f90
+
+  src/1d_integrating/integrating_on_uniform_5point.f90
+  src/1d_integrating/imp/integrating_on_uniform_5point_impl.f90
 )
 
 include(../../../cmake/for_libraries/generate_library_with_namespace.cmake)
