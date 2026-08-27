@@ -4,7 +4,7 @@ cd ../../../external_dependencies/
 
 if [ -d "Error_Fns_Dawson_Intgrl_Cmplx" ]; then
     echo "Error_Fns_Dawson_Intgrl_Cmplx folder exists"
-    cd ../src/libs/oscillation_integrating
+    cd ../src/libs/oscillation_integral
     exit 0
 fi
 
@@ -25,4 +25,4 @@ cp *.mod include/
 
 cd ../..
 
-cd ../src/libs/oscillation_integrating
+cd ../src/libs/oscillation_integral

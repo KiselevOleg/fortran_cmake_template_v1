@@ -1,0 +1,392 @@
+@test
+module integrating_surf_uniform_bilinear_test
+use oscillation_integral___integrating_surf_uniform_bilinear, only: &
+  filon_like_integrating_uniform_bilinear_type
+use system_exception___exception, only: exception_type, assignment(=), &
+  EXCEPTION_KIND_TYPE_ERROR, EXCEPTION_KIND_TYPE_WARNING, EXCEPTION_KIND_TYPE_INFO, print_exception
+use PFUnit, only: &
+  assertEqual, & ! assertEqual(expected, actual, [tolerance], [message])
+  assertNotEqual, & ! assertNotEqual(expected, actual, [tolerance], [message])
+  assertTrue ! assertTrue(condition, [message])
+use, intrinsic :: iso_fortran_env, only: sp => real32, dp => real64, qp => real128, &
+  i1 => int8, i2 => int16, i4 => int32, i8 => int64
+implicit none (type, external)
+public
+  character(len = *), parameter :: module_name = &
+    "oscillation_integration___integrating_on_uniform_5point_test"
+
+  character(len = *), parameter :: test_file_name = "test_hdf5.h5"
+
+  complex(dp), parameter :: ci = (0.0_dp, 1.0_dp)
+
+  abstract interface
+    pure complex(dp) function f_template(x, y) result(res)
+    import :: dp
+    implicit none (type, external)
+      real(dp), intent(in) :: x
+      real(dp), intent(in) :: y
+    end function f_template
+    pure complex(dp) function res_for_f_template(a_x, b_x, a_y, b_y, omega_x, omega_y) result(res)
+    import :: dp
+    implicit none (type, external)
+      real(dp), intent(in) :: a_x
+      real(dp), intent(in) :: b_x
+      real(dp), intent(in) :: a_y
+      real(dp), intent(in) :: b_y
+      real(dp), intent(in) :: omega_x
+      real(dp), intent(in) :: omega_y
+    end function res_for_f_template
+  end interface
+contains
+
+  @test
+  subroutine integrate_test()
+  implicit none (type, external)
+    type(filon_like_integrating_uniform_bilinear_type) :: integrator
+    type(exception_type) :: error
+
+    integer(i4) :: a_x_i, b_x_i, omega_x_i, N_x_i
+    integer(i4) :: a_y_i, b_y_i, omega_y_i, N_y_i
+    integer(i4) :: f_i
+    integer(i4) :: N_x, N_y
+    real(dp) :: a_x, b_x, omega_x
+    real(dp) :: a_y, b_y, omega_y
+    real(dp) :: eps
+
+    integer(i4) :: N_i_min, N_i_max
+    real(dp) :: domain_scale
+
+    procedure(f_template), pointer :: f
+    procedure(res_for_f_template), pointer :: res_for_f
+
+    do f_i = 1_i4, 5_i4
+      select case (f_i)
+      case (1_i4)
+        eps = 1e-9_dp
+        f => f1
+        res_for_f => res_for_f1
+      case (2_i4)
+        eps = 1e-4_dp
+        f => f2
+        res_for_f => res_for_f2
+      case (3_i4)
+        eps = 1e-9_dp
+        f => f3
+        res_for_f => res_for_f3
+      case (4_i4)
+        eps = 1e-9_dp
+        f => f4
+        res_for_f => res_for_f4
+      case (5_i4)
+        eps = 1e-4_dp
+        f => f5
+        res_for_f => res_for_f5
+      case default
+        cycle
+      end select
+
+      domain_scale = 1.0_dp
+      N_i_min = 1_i4; N_i_max = 2_i4
+      if (f_i == 2_i4) N_i_min = 4_i4
+      if (f_i == 2_i4) N_i_max = 4_i4
+      if (f_i == 2_i4) domain_scale = 4.0_dp
+      if (f_i == 5_i4) N_i_min = 4_i4
+      if (f_i == 5_i4) N_i_max = 4_i4
+      do a_x_i = - 4_i4, 4_i4, 2_i4
+        do b_x_i = a_x_i + 1_i4, 4_i4, 2_i4
+          do a_y_i = - 4_i4, 4_i4, 2_i4
+            do b_y_i = a_y_i + 1_i4, 4_i4, 2_i4
+              do omega_x_i = 1_i4, 4_i4, 1_i4
+                do omega_y_i = 1_i4, 4_i4, 1_i4
+                  do N_x_i = N_i_min, N_i_max
+                    do N_y_i = N_i_min, N_i_max
+                      a_x = real(a_x_i, dp) / domain_scale
+                      b_x = real(b_x_i, dp) / domain_scale
+                      N_x = 10_i4 * N_x_i
+                      omega_x = 10.0_dp ** omega_x_i
+
+                      a_y = real(a_y_i, dp) / domain_scale
+                      b_y = real(b_y_i, dp) / domain_scale
+                      N_y = 10_i4 * N_y_i
+                      omega_y = 10.0_dp ** omega_y_i
+
+                      call check(f, res_for_f, a_x, b_x, a_y, b_y, N_x, N_y, omega_x, omega_y, eps)
+                    end do
+                  end do
+                end do
+              end do
+            end do
+          end do
+        end do
+      end do
+    end do
+
+    call check_if_error_is_not_thrown(error)
+
+    contains
+
+    subroutine check(f, res_for_f, a_x, b_x, a_y, b_y, N_x, N_y, omega_x, omega_y, eps)
+    !implicit none (type, external)
+    ! allow(C003)
+    implicit none (type)
+      procedure(f_template) :: f
+      procedure(res_for_f_template) :: res_for_f
+      real(dp), intent(in) :: a_x
+      real(dp), intent(in) :: b_x
+      real(dp), intent(in) :: a_y
+      real(dp), intent(in) :: b_y
+      integer(i4), intent(in) :: N_x
+      integer(i4), intent(in) :: N_y
+      real(dp), intent(in) :: omega_x
+      real(dp), intent(in) :: omega_y
+      real(dp), intent(in) :: eps
+
+      call integrator%init(f, a_x, b_x, a_y, b_y, N_x, N_y, error)
+      call check_if_error_is_not_thrown(error)
+      call assertEqual(&
+        expected = &
+          res_for_f( &
+            a_x = a_x, b_x = b_x, a_y = a_y, b_y = b_y, &
+            omega_x = omega_x, omega_y = omega_y &
+          ), &
+        actual = integrator%integrate(omega_x = omega_x, omega_y = omega_y), &
+        tolerance = eps, &
+        message = "incorrect result" &
+      )
+    end subroutine check
+  end subroutine integrate_test
+  @test
+  subroutine create_close_file_test()
+  implicit none (type, external)
+    type(filon_like_integrating_uniform_bilinear_type) :: integrator
+    type(exception_type) :: error
+
+    block
+      type(filon_like_integrating_uniform_bilinear_type) :: h
+      call h%init( &
+        f = f4, a_x = 0.0_dp, b_x = 4.0_dp, a_y = - 1.0_dp, b_y = 3.0_dp, &
+        N_x = 100_i4, N_y = 20_i4, &
+        error = error &
+      )
+      call h%save_to_file(test_file_name, error)
+      call check_if_error_is_not_thrown(error)
+    end block
+
+    call integrator%init(test_file_name, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = &
+        res_for_f4( &
+          a_x = 0.0_dp, b_x = 4.0_dp, a_y = - 1.0_dp, b_y = 3.0_dp, &
+          omega_x = 20.0_dp, omega_y = 10.0_dp &
+        ), &
+      actual = integrator%integrate(omega_x = 20.0_dp, omega_y = 10.0_dp), &
+      tolerance = 1e-9_dp, &
+      message = "incorrect result" &
+    )
+
+    call check_if_error_is_not_thrown(error)
+  end subroutine create_close_file_test
+
+
+
+
+
+  pure complex(dp) function f1(x, y) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: x
+    real(dp), intent(in) :: y
+
+    res = 1.0_dp
+  end function f1
+  pure complex(dp) function f2(x, y) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: x
+    real(dp), intent(in) :: y
+
+    res = (x - 1.0_dp) * (y - 2.0_dp) ** 2_i4
+  end function f2
+  pure complex(dp) function f3(x, y) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: x
+    real(dp), intent(in) :: y
+
+    res = 0.0_dp
+  end function f3
+  pure complex(dp) function f4(x, y) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: x
+    real(dp), intent(in) :: y
+
+    res = x
+  end function f4
+  pure complex(dp) function f5(x, y) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: x
+    real(dp), intent(in) :: y
+
+    res = y * y + 1.0_dp
+  end function f5
+
+  ! antiderivatives of the functions
+  ! \int f(x) * e^{i \omega x} dx = res_for_f(x, omega)
+  pure complex(dp) function I_0(a, b, omega) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: a
+    real(dp), intent(in) :: b
+    real(dp), intent(in) :: omega
+
+    associate (ci => (0.0_dp, 1.0_dp))
+      res = (- ci * exp(ci * omega * b) + ci * exp(ci * omega * a)) / omega
+    end associate
+  end function I_0
+  pure complex(dp) function I_1(a, b, omega) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: a
+    real(dp), intent(in) :: b
+    real(dp), intent(in) :: omega
+
+    associate (ci => (0.0_dp, 1.0_dp))
+      res = &
+        ( &
+          - (ci * omega * b - 1.0_dp) * exp(ci * omega * b) &
+          + (ci * omega * a - 1.0_dp) * exp(ci * omega * a) &
+        ) / omega / omega
+    end associate
+  end function I_1
+  pure complex(dp) function I_2(a, b, omega) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: a
+    real(dp), intent(in) :: b
+    real(dp), intent(in) :: omega
+
+    associate (ci => (0.0_dp, 1.0_dp))
+      res = &
+        ( &
+          - (ci * omega ** 2_i4 * b * b - 2.0_dp * omega * b - 2.0_dp * ci) * &
+            exp(ci * omega * b) &
+          + (ci * omega ** 2_i4 * a * a - 2.0_dp * omega * a - 2.0_dp * ci) * &
+            exp(ci * omega * a) &
+        ) / omega / omega / omega
+    end associate
+  end function I_2
+
+  pure complex(dp) function res_for_f1(a_x, b_x, a_y, b_y, omega_x, omega_y) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: a_x
+    real(dp), intent(in) :: b_x
+    real(dp), intent(in) :: a_y
+    real(dp), intent(in) :: b_y
+    real(dp), intent(in) :: omega_x
+    real(dp), intent(in) :: omega_y
+
+    res = 0.0_dp
+    res = res + I_0(a_x, b_x, omega_x) * I_0(a_y, b_y, omega_y)
+  end function res_for_f1
+  pure complex(dp) function res_for_f2(a_x, b_x, a_y, b_y, omega_x, omega_y) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: a_x
+    real(dp), intent(in) :: b_x
+    real(dp), intent(in) :: a_y
+    real(dp), intent(in) :: b_y
+    real(dp), intent(in) :: omega_x
+    real(dp), intent(in) :: omega_y
+
+    res = 0.0_dp
+    res = res + 1.0_dp * I_1(a_x, b_x, omega_x) * I_2(a_y, b_y, omega_y)
+    res = res - 4.0_dp * I_1(a_x, b_x, omega_x) * I_1(a_y, b_y, omega_y)
+    res = res + 4.0_dp * I_1(a_x, b_x, omega_x) * I_0(a_y, b_y, omega_y)
+    res = res - 1.0_dp * I_0(a_x, b_x, omega_x) * I_2(a_y, b_y, omega_y)
+    res = res - 4.0_dp * I_0(a_x, b_x, omega_x) * I_0(a_y, b_y, omega_y)
+    res = res + 4.0_dp * I_0(a_x, b_x, omega_x) * I_1(a_y, b_y, omega_y)
+  end function res_for_f2
+  pure complex(dp) function res_for_f3(a_x, b_x, a_y, b_y, omega_x, omega_y) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: a_x
+    real(dp), intent(in) :: b_x
+    real(dp), intent(in) :: a_y
+    real(dp), intent(in) :: b_y
+    real(dp), intent(in) :: omega_x
+    real(dp), intent(in) :: omega_y
+
+    res = 0.0_dp
+  end function res_for_f3
+  pure complex(dp) function res_for_f4(a_x, b_x, a_y, b_y, omega_x, omega_y) result(res)
+  use set_rk, only: sp_rk => sp, dp_rk => dp, qp_rk => qp
+  use faddeyeva_v3_mod_rk, only: faddeyeva_v3_rk, erfc_z, erf_z, erfi_z, erfcx_z, Dawson_z
+  implicit none (type, external)
+    real(dp), intent(in) :: a_x
+    real(dp), intent(in) :: b_x
+    real(dp), intent(in) :: a_y
+    real(dp), intent(in) :: b_y
+    real(dp), intent(in) :: omega_x
+    real(dp), intent(in) :: omega_y
+
+    res = 0.0_dp
+    res = res + I_1(a_x, b_x, omega_x) * I_0(a_y, b_y, omega_y)
+  end function res_for_f4
+  pure complex(dp) function res_for_f5(a_x, b_x, a_y, b_y, omega_x, omega_y) result(res)
+  use set_rk, only: sp_rk => sp, dp_rk => dp, qp_rk => qp
+  use faddeyeva_v3_mod_rk, only: faddeyeva_v3_rk, erfc_z, erf_z, erfi_z, erfcx_z, Dawson_z
+  implicit none (type, external)
+    real(dp), intent(in) :: a_x
+    real(dp), intent(in) :: b_x
+    real(dp), intent(in) :: a_y
+    real(dp), intent(in) :: b_y
+    real(dp), intent(in) :: omega_x
+    real(dp), intent(in) :: omega_y
+
+    res = 0.0_dp
+    res = res + I_0(a_x, b_x, omega_x) * I_2(a_y, b_y, omega_y)
+    res = res + I_0(a_x, b_x, omega_x) * I_0(a_y, b_y, omega_y)
+  end function res_for_f5
+
+
+
+
+
+  subroutine check_if_error_is_not_thrown(error)
+  implicit none (type, external)
+    type(exception_type), intent(in) :: error
+
+    if (error%has_thrown()) then
+      call print_exception(error)
+    end if
+    call assertTrue(.not. error%has_thrown())
+  end subroutine check_if_error_is_not_thrown
+  subroutine check_if_error_is_thrown(error)
+  implicit none (type, external)
+    type(exception_type), intent(in) :: error
+
+    if (error%has_thrown()) then
+      call print_exception(error)
+    end if
+    call assertTrue(error%has_thrown())
+  end subroutine check_if_error_is_thrown
+
+
+
+
+
+  @before
+  subroutine BeforeAll()
+  implicit none (type, external)
+    print *, "srart tests"
+
+    block
+      logical :: exists
+
+      inquire(file = test_file_name, exist = exists)
+
+      if (exists) then
+        call execute_command_line("rm -f " // test_file_name)
+      end if
+    end block
+  end subroutine BeforeAll
+
+  @after
+  subroutine AfterAll()
+  implicit none (type, external)
+    print *, "end tests"
+  end subroutine AfterAll
+end module integrating_surf_uniform_bilinear_test

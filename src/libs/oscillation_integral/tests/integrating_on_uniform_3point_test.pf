@@ -1,6 +1,6 @@
 @test
 module integrating_on_uniform_3point_test
-use oscillation_integrating___integrating_on_uniform_3point, only: &
+use oscillation_integral___integrating_on_uniform_3point, only: &
   filon_like_integrating_uniform_3points_type
 use system_exception___exception, only: exception_type, assignment(=), &
   EXCEPTION_KIND_TYPE_ERROR, EXCEPTION_KIND_TYPE_WARNING, EXCEPTION_KIND_TYPE_INFO, print_exception

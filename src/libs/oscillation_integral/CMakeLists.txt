@@ -2,14 +2,17 @@
 # STATIC LIBRARY WITH AUTO NAMESPACE
 # ==========================================================
 
-set(LIBRARY_NAME "oscillation_integrating")
+set(LIBRARY_NAME "oscillation_integral")
 
 set(SRC_FILES
-  src/1d_integrating/integrating_on_uniform_3point.f90
-  src/1d_integrating/imp/integrating_on_uniform_3point_impl.f90
+  src/1d_integral/integrating_on_uniform_3point.f90
+  src/1d_integral/imp/integrating_on_uniform_3point_impl.f90
 
-  src/1d_integrating/integrating_on_uniform_5point.f90
-  src/1d_integrating/imp/integrating_on_uniform_5point_impl.f90
+  src/1d_integral/integrating_on_uniform_5point.f90
+  src/1d_integral/imp/integrating_on_uniform_5point_impl.f90
+
+  src/2d_integral/integrating_surf_uniform_bilinear.f90
+  src/2d_integral/imp/integrating_surf_uniform_bilinear_impl.f90
 )
 
 include(../../../cmake/for_libraries/generate_library_with_namespace.cmake)

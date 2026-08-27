@@ -1,16 +1,16 @@
 !> @author Haart
 !>
-!> a module for integrating 1d integrals by finon-like method
-!> where the function is sampled on a uniform grid and approximated locally
-!> using consecutive 5 point stencils
-!> (i. e. f is replaced with its precalculated grid (init) for integration process (integrate))
+!> a module for evaluating 1D oscillatory integrals using a Filon-like method
+!> where the amplitude function is sampled on a uniform grid and locally approximated
+!> using consecutive 3 point stencils
+!> (i. e. f is replaced with its precomputed grid (init) for the integration process (integrate))
 !>
 !> $\int_a^b f(x) e^{i\omega x} dx, \omega \rightarrow \infty$
 !>
 !> The integrand amplitude f(x) is sampled on a uniform grid and approximated
 !> by a polynomial on consecutive three-point stencils. The resulting
 !> polynomial is integrated analytically against exp(i * omega * x)
-module integrating_on_uniform_5point
+module integrating_on_uniform_3point
 use system_exception___exception, only: exception_type, assignment(=), &
   EXCEPTION_KIND_TYPE_ERROR, EXCEPTION_KIND_TYPE_WARNING, EXCEPTION_KIND_TYPE_INFO, print_exception
 use, intrinsic :: iso_fortran_env, only: sp => real32, dp => real64, qp => real128, &
@@ -18,7 +18,7 @@ use, intrinsic :: iso_fortran_env, only: sp => real32, dp => real64, qp => real1
 implicit none (type, external)
 private
   character(len = *), parameter :: module_name = &
-    "oscillation_integrating___integrating_on_uniform_5point"
+    "oscillation_integrating___integrating_on_uniform_3point"
 
   abstract interface
     complex(dp) function integrated_function_type(x) result(res)
@@ -28,7 +28,7 @@ private
     end function integrated_function_type
   end interface
 
-  type, public :: filon_like_integrating_uniform_5points_type
+  type, public :: filon_like_integrating_uniform_3points_type
   private
     complex(dp), allocatable :: f(:)
     real(dp), allocatable :: x(:)
@@ -42,18 +42,18 @@ private
     procedure, pass(this) :: integrate
 
     procedure, pass(this) :: save_to_file
-  end type filon_like_integrating_uniform_5points_type
+  end type filon_like_integrating_uniform_3points_type
 
   interface
     module subroutine init_from_function(this, f, a, b, N, error)
     implicit none (type, external)
-      class(filon_like_integrating_uniform_5points_type), intent(inout) :: this
+      class(filon_like_integrating_uniform_3points_type), intent(inout) :: this
       procedure(integrated_function_type) :: f
       !> a < b
       real(dp), intent(in) :: a
       !> a < b
       real(dp), intent(in) :: b
-      !> approximately number of used points (how many points on x is used to obtain f values)
+      !>approximate number of grid points (the number of points along the axis used to evaluate f)
       !>
       !> N > 5
       integer(i4), intent(in) :: N
@@ -62,7 +62,7 @@ private
     !> must have the correct structure corresponding to save_to_file
     module subroutine init_from_file(this, file, error)
     implicit none (type, external)
-      class(filon_like_integrating_uniform_5points_type), intent(inout) :: this
+      class(filon_like_integrating_uniform_3points_type), intent(inout) :: this
       !> must have the correct structure corresponding to save_to_file method
       character(len = *), intent(in) :: file
       type(exception_type), intent(inout) :: error
@@ -76,7 +76,7 @@ private
     !> due to the realization constrains
     pure complex(dp) module function integrate(this, omega) result(res)
     implicit none (type, external)
-      class(filon_like_integrating_uniform_5points_type), intent(in) :: this
+      class(filon_like_integrating_uniform_3points_type), intent(in) :: this
       !> omega > 0 (otherwise error stop raised)
       real(dp), intent(in) :: omega
     end function integrate
@@ -91,9 +91,9 @@ private
     !> this file can be loaded by init method
     module subroutine save_to_file(this, file, error)
     implicit none (type, external)
-      class(filon_like_integrating_uniform_5points_type), intent(in) :: this
+      class(filon_like_integrating_uniform_3points_type), intent(in) :: this
       character(len = *), intent(in) :: file
       type(exception_type), intent(inout) :: error
     end subroutine save_to_file
   end interface
-end module integrating_on_uniform_5point
+end module integrating_on_uniform_3point

@@ -1,6 +1,6 @@
 @test
 module integrating_on_uniform_5point_test
-use oscillation_integrating___integrating_on_uniform_5point, only: &
+use oscillation_integral___integrating_on_uniform_5point, only: &
   filon_like_integrating_uniform_5points_type
 use system_exception___exception, only: exception_type, assignment(=), &
   EXCEPTION_KIND_TYPE_ERROR, EXCEPTION_KIND_TYPE_WARNING, EXCEPTION_KIND_TYPE_INFO, print_exception
