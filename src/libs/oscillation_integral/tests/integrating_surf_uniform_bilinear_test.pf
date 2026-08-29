@@ -17,6 +17,8 @@ public
 
   character(len = *), parameter :: test_file_name = "test_hdf5.h5"
   character(len = *), parameter :: mask_with_test_file_name = "mask_with_test_hdf5.h5"
+  character(len = *), parameter :: symmetric_four_quadrants_with_file_name = &
+    "symmetric_four_quadrants_with_test_hdf5.h5"
 
   complex(dp), parameter :: ci = (0.0_dp, 1.0_dp)
 
@@ -188,6 +190,7 @@ contains
 
     call check_if_error_is_not_thrown(error)
   end subroutine create_close_file_test
+
   @test
   subroutine mask_test()
   implicit none (type, external)
@@ -264,6 +267,96 @@ contains
     end function mask
   end subroutine mask_with_file_test
 
+  @test
+  subroutine symmetric_four_quadrants_test()
+  implicit none (type, external)
+    type(filon_like_integrating_uniform_bilinear_type) :: integrator, tester
+    type(exception_type) :: error
+
+    call integrator%init( &
+      f = f2, a_x = 0.0_dp, b_x = 4.0_dp, a_y = 0.0_dp, b_y = 3.0_dp, &
+      N_x = 101_i4, N_y = 51_i4, symmetric_four_quadrants = .true., &
+      error = error &
+    )
+    call tester%init( &
+      f = f2_symmetric, a_x = - 4.0_dp, b_x = 4.0_dp, a_y = - 3.0_dp, b_y = 3.0_dp, &
+      N_x = 201_i4, N_y = 101_i4, symmetric_four_quadrants = .false., &
+      error = error &
+    )
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = tester%integrate(omega_x = 20.0_dp, omega_y = 10.0_dp), &
+      actual = integrator%integrate(omega_x = 20.0_dp, omega_y = 10.0_dp), &
+      tolerance = 1e-9_dp, &
+      message = "incorrect result" &
+    )
+
+    call check_if_error_is_not_thrown(error)
+  end subroutine symmetric_four_quadrants_test
+  @test
+  subroutine symmetric_four_quadrants_with_file_test()
+  implicit none (type, external)
+    type(filon_like_integrating_uniform_bilinear_type) :: integrator
+    type(filon_like_integrating_uniform_bilinear_type) :: tester1, tester2, tester3, tester4
+    type(exception_type) :: error
+
+    block
+      type(filon_like_integrating_uniform_bilinear_type) :: h
+      call h%init( &
+        f = f2, a_x = 1.0_dp, b_x = 4.0_dp, a_y = 2.0_dp, b_y = 3.0_dp, &
+        N_x = 91_i4, N_y = 51_i4, &
+        error = error, mask_f = mask, symmetric_four_quadrants = .true. &
+      )
+      call h%save_to_file(symmetric_four_quadrants_with_file_name, error)
+      call check_if_error_is_not_thrown(error)
+    end block
+
+    call integrator%init(symmetric_four_quadrants_with_file_name, error)
+    call tester1%init( &
+      f = f2_symmetric, a_x = 1.0_dp, b_x = 2.0_dp, a_y = 2.5_dp, b_y = 3.0_dp, &
+      N_x = 51_i4, N_y = 101_i4, symmetric_four_quadrants = .false., &
+      error = error &
+    )
+    call tester2%init( &
+      f = f2_symmetric, a_x = - 2.0_dp, b_x = - 1.0_dp, a_y = 2.5_dp, b_y = 3.0_dp, &
+      N_x = 51_i4, N_y = 101_i4, symmetric_four_quadrants = .false., &
+      error = error &
+    )
+    call tester3%init( &
+      f = f2_symmetric, a_x = 1.0_dp, b_x = 2.0_dp, a_y = - 3.0_dp, b_y = - 2.5_dp, &
+      N_x = 51_i4, N_y = 101_i4, symmetric_four_quadrants = .false., &
+      error = error &
+    )
+    call tester4%init( &
+      f = f2_symmetric, a_x = - 2.0_dp, b_x = - 1.0_dp, a_y = - 3.0_dp, b_y = - 2.5_dp, &
+      N_x = 51_i4, N_y = 101_i4, symmetric_four_quadrants = .false., &
+      error = error &
+    )
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = &
+        tester1%integrate(omega_x = 20.0_dp, omega_y = 10.0_dp) + &
+        tester2%integrate(omega_x = 20.0_dp, omega_y = 10.0_dp) + &
+        tester3%integrate(omega_x = 20.0_dp, omega_y = 10.0_dp) + &
+        tester4%integrate(omega_x = 20.0_dp, omega_y = 10.0_dp) &
+        , &
+      actual = integrator%integrate(omega_x = 20.0_dp, omega_y = 10.0_dp), &
+      tolerance = 1e-5_dp, &
+      message = "incorrect result" &
+    )
+
+    call check_if_error_is_not_thrown(error)
+
+    contains
+    pure logical function mask(x, y) result(res)
+    implicit none (type, external)
+      real(dp), intent(in) :: x
+      real(dp), intent(in) :: y
+
+      res = x < 2.00001_dp .and. y > 2.49999_dp
+    end function mask
+  end subroutine symmetric_four_quadrants_with_file_test
+
 
 
 
@@ -282,6 +375,14 @@ contains
 
     res = (x - 1.0_dp) * (y - 2.0_dp) ** 2_i4
   end function f2
+
+  pure complex(dp) function f2_symmetric(x, y) result(res)
+  implicit none (type, external)
+    real(dp), intent(in) :: x
+    real(dp), intent(in) :: y
+
+    res = (abs(x) - 1.0_dp) * (abs(y) - 2.0_dp) ** 2_i4
+  end function f2_symmetric
   pure complex(dp) function f3(x, y) result(res)
   implicit none (type, external)
     real(dp), intent(in) :: x
@@ -465,6 +566,15 @@ contains
 
       if (exists) then
         call execute_command_line("rm -f " // mask_with_test_file_name)
+      end if
+    end block
+    block
+      logical :: exists
+
+      inquire(file = symmetric_four_quadrants_with_file_name, exist = exists)
+
+      if (exists) then
+        call execute_command_line("rm -f " // symmetric_four_quadrants_with_file_name)
       end if
     end block
   end subroutine BeforeAll

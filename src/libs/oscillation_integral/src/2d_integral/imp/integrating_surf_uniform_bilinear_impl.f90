@@ -105,6 +105,9 @@ implicit none (type, external)
         end do
       end do
     end block
+
+    this%symmetric_four_quadrants = .false.
+    if (present(symmetric_four_quadrants)) this%symmetric_four_quadrants = symmetric_four_quadrants
   end procedure init_from_function
   module procedure init_from_file
     character(len = *), parameter :: procedure_name = "init_from_file"
@@ -128,6 +131,8 @@ implicit none (type, external)
       real(dp), allocatable :: real_f(:, :), imag_f(:, :)
       integer(i4), allocatable :: mask(:, :)
 
+      integer(i4) :: symmetric_four_quadrants_i
+
       real(dp) :: x, y
       integer(i4) :: i, j
 
@@ -143,6 +148,9 @@ implicit none (type, external)
         value = this%a_y, error = error)
       call h%attribute_get(path = "f_data", attribute_name = "b_y", &
         value = this%b_y, error = error)
+      call h%attribute_get(path = "f_data", attribute_name = "symmetric_four_quadrants", &
+        value = symmetric_four_quadrants_i, error = error)
+      this%symmetric_four_quadrants = .not. (symmetric_four_quadrants_i == 0_i4)
       if (error%has_thrown()) return
       call error%throw_if_not ( &
         where = module_name // "." // procedure_name, &
@@ -219,72 +227,178 @@ implicit none (type, external)
 
       complex(dp) :: Int, Intx, Inty, Intxy
 
-      integer(i4) :: i, j
+      integer(i4) :: i, j, k
 
       complex(dp), parameter :: ci = (0.0_dp, 1.0_dp)
 
-      res = 0.0_dp
-      do i = 1_i4, size(this%x) - 1_i4
-        do j = 1_i4, size(this%y) - 1_i4
-          if (.not. this%considering_mask(i, j)) cycle
-          if (.not. this%considering_mask(i + 1_i4, j)) cycle
-          if (.not. this%considering_mask(i, j + 1_i4)) cycle
-          if (.not. this%considering_mask(i + 1_i4, j + 1_i4)) cycle
+      if (this%symmetric_four_quadrants) then
+        res = 0.0_dp
+        do i = 1_i4, size(this%x) - 1_i4
+          do j = 1_i4, size(this%y) - 1_i4
+            if (.not. this%considering_mask(i, j)) cycle
+            if (.not. this%considering_mask(i + 1_i4, j)) cycle
+            if (.not. this%considering_mask(i, j + 1_i4)) cycle
+            if (.not. this%considering_mask(i + 1_i4, j + 1_i4)) cycle
 
-          q11 = this%f(i, j)
-          q12 = this%f(i, j + 1_i4)
-          q21 = this%f(i + 1_i4, j)
-          q22 = this%f(i + 1_i4, j + 1_i4)
+            do k = 1_i4, 4_i4, 1_i4
+              select case (k)
+              case (1_i4)
+                q11 = this%f(i, j)
+                q12 = this%f(i, j + 1_i4)
+                q21 = this%f(i + 1_i4, j)
+                q22 = this%f(i + 1_i4, j + 1_i4)
 
-          x1 = this%x(i)
-          x2 = this%x(i + 1_i4)
-          y1 = this%y(j)
-          y2 = this%y(j + 1_i4)
+                x1 = this%x(i)
+                x2 = this%x(i + 1_i4)
+                y1 = this%y(j)
+                y2 = this%y(j + 1_i4)
+              case (2_i4)
+                q11 = this%f(i + 1_i4, j)
+                q12 = this%f(i + 1_i4, j + 1_i4)
+                q21 = this%f(i, j)
+                q22 = this%f(i, j + 1_i4)
 
-          Int = 0.0_dp
-          Int = Int + (exp(ci * omega_x * x2) - exp(ci * omega_x * x1)) / (ci * omega_x)
-          Int = Int * (exp(ci * omega_y * y2) - exp(ci * omega_y * y1)) / (ci * omega_y)
+                x1 = - this%x(i+ 1_i4)
+                x2 = - this%x(i)
+                y1 = this%y(j)
+                y2 = this%y(j + 1_i4)
+              case (3_i4)
+                q11 = this%f(i + 1_i4, j + 1_i4)
+                q12 = this%f(i + 1_i4, j)
+                q21 = this%f(i, j + 1_i4)
+                q22 = this%f(i, j)
 
-          Intx = 0.0_dp
-          Intx = Intx + &
-            ( &
-              (ci * omega_x * x2 - 1.0_dp) * exp(ci * omega_x * x2) + &
-              (1.0_dp - ci * omega_x * x1) * exp(ci * omega_x * x1) &
-            ) &
-            / (- omega_x * omega_x)
-          Intx = Intx * (exp(ci * omega_y * y2) - exp(ci * omega_y * y1)) / (ci * omega_y)
+                x1 = - this%x(i + 1_i4)
+                x2 = - this%x(i)
+                y1 = - this%y(j + 1_i4)
+                y2 = - this%y(j)
+              case (4_i4)
+                q11 = this%f(i, j + 1_i4)
+                q12 = this%f(i, j)
+                q21 = this%f(i + 1_i4, j + 1_i4)
+                q22 = this%f(i + 1_i4, j)
 
-          Inty = 0.0_dp
-          Inty = Inty + (exp(ci * omega_x * x2) - exp(ci * omega_x * x1)) / (ci * omega_x)
-          Inty = Inty * &
-            ( &
-              (ci * omega_y * y2 - 1.0_dp) * exp(ci * omega_y * y2) + &
-              (1.0_dp - ci * omega_y * y1) * exp(ci * omega_y * y1) &
-            ) &
-            / (- omega_y * omega_y)
+                x1 = this%x(i)
+                x2 = this%x(i + 1_i4)
+                y1 = - this%y(j + 1_i4)
+                y2 = - this%y(j)
+              case default
+                call error_assert( &
+                  location = module_name // "." // procedure_name, &
+                  message = "unexpected error", &
+                  condition = .true. &
+                )
+              end select
 
-          Intxy = 0.0_dp
-          Intxy = Intxy + &
-            ( &
-              (ci * omega_x * x2 - 1.0_dp) * exp(ci * omega_x * x2) + &
-              (1.0_dp - ci * omega_x * x1) * exp(ci * omega_x * x1) &
-            ) &
-            / (- omega_x * omega_x)
-          Intxy = Intxy * &
-            ( &
-              (ci * omega_y * y2 - 1.0_dp) * exp(ci * omega_y * y2) + &
-              (1.0_dp - ci * omega_y * y1) * exp(ci * omega_y * y1) &
-            ) &
-            / (- omega_y * omega_y)
+              Int = 0.0_dp
+              Int = Int + (exp(ci * omega_x * x2) - exp(ci * omega_x * x1)) / (ci * omega_x)
+              Int = Int * (exp(ci * omega_y * y2) - exp(ci * omega_y * y1)) / (ci * omega_y)
 
-          res = res &
-            + (q11 - q12 - q21 + q22) * Intxy &
-            + (- q11 * y2 + q21 * y2 + q12 * y1 - q22 * y1) * Intx &
-            + (- q11 * x2 + q21 * x1 + q12 * x2 - q22 * x1) * Inty &
-            + (q11 * x2 * y2 - q21 * x1 * y2 - q12 * x2 * y1 + q22 * x1 * y1) * Int
+              Intx = 0.0_dp
+              Intx = Intx + &
+                ( &
+                  (ci * omega_x * x2 - 1.0_dp) * exp(ci * omega_x * x2) + &
+                  (1.0_dp - ci * omega_x * x1) * exp(ci * omega_x * x1) &
+                ) &
+                / (- omega_x * omega_x)
+              Intx = Intx * (exp(ci * omega_y * y2) - exp(ci * omega_y * y1)) / (ci * omega_y)
+
+              Inty = 0.0_dp
+              Inty = Inty + (exp(ci * omega_x * x2) - exp(ci * omega_x * x1)) / (ci * omega_x)
+              Inty = Inty * &
+                ( &
+                  (ci * omega_y * y2 - 1.0_dp) * exp(ci * omega_y * y2) + &
+                  (1.0_dp - ci * omega_y * y1) * exp(ci * omega_y * y1) &
+                ) &
+                / (- omega_y * omega_y)
+
+              Intxy = 0.0_dp
+              Intxy = Intxy + &
+                ( &
+                  (ci * omega_x * x2 - 1.0_dp) * exp(ci * omega_x * x2) + &
+                  (1.0_dp - ci * omega_x * x1) * exp(ci * omega_x * x1) &
+                ) &
+                / (- omega_x * omega_x)
+              Intxy = Intxy * &
+                ( &
+                  (ci * omega_y * y2 - 1.0_dp) * exp(ci * omega_y * y2) + &
+                  (1.0_dp - ci * omega_y * y1) * exp(ci * omega_y * y1) &
+                ) &
+                / (- omega_y * omega_y)
+
+              res = res &
+                + (q11 - q12 - q21 + q22) * Intxy &
+                + (- q11 * y2 + q21 * y2 + q12 * y1 - q22 * y1) * Intx &
+                + (- q11 * x2 + q21 * x1 + q12 * x2 - q22 * x1) * Inty &
+                + (q11 * x2 * y2 - q21 * x1 * y2 - q12 * x2 * y1 + q22 * x1 * y1) * Int
+            end do
+          end do
         end do
-      end do
-      res = res / (this%x(2) - this%x(1)) / (this%y(2) - this%y(1))
+        res = res / (this%x(2) - this%x(1)) / (this%y(2) - this%y(1))
+      else
+        res = 0.0_dp
+        do i = 1_i4, size(this%x) - 1_i4
+          do j = 1_i4, size(this%y) - 1_i4
+            if (.not. this%considering_mask(i, j)) cycle
+            if (.not. this%considering_mask(i + 1_i4, j)) cycle
+            if (.not. this%considering_mask(i, j + 1_i4)) cycle
+            if (.not. this%considering_mask(i + 1_i4, j + 1_i4)) cycle
+
+            q11 = this%f(i, j)
+            q12 = this%f(i, j + 1_i4)
+            q21 = this%f(i + 1_i4, j)
+            q22 = this%f(i + 1_i4, j + 1_i4)
+
+            x1 = this%x(i)
+            x2 = this%x(i + 1_i4)
+            y1 = this%y(j)
+            y2 = this%y(j + 1_i4)
+
+            Int = 0.0_dp
+            Int = Int + (exp(ci * omega_x * x2) - exp(ci * omega_x * x1)) / (ci * omega_x)
+            Int = Int * (exp(ci * omega_y * y2) - exp(ci * omega_y * y1)) / (ci * omega_y)
+
+            Intx = 0.0_dp
+            Intx = Intx + &
+              ( &
+                (ci * omega_x * x2 - 1.0_dp) * exp(ci * omega_x * x2) + &
+                (1.0_dp - ci * omega_x * x1) * exp(ci * omega_x * x1) &
+              ) &
+              / (- omega_x * omega_x)
+            Intx = Intx * (exp(ci * omega_y * y2) - exp(ci * omega_y * y1)) / (ci * omega_y)
+
+            Inty = 0.0_dp
+            Inty = Inty + (exp(ci * omega_x * x2) - exp(ci * omega_x * x1)) / (ci * omega_x)
+            Inty = Inty * &
+              ( &
+                (ci * omega_y * y2 - 1.0_dp) * exp(ci * omega_y * y2) + &
+                (1.0_dp - ci * omega_y * y1) * exp(ci * omega_y * y1) &
+              ) &
+              / (- omega_y * omega_y)
+
+            Intxy = 0.0_dp
+            Intxy = Intxy + &
+              ( &
+                (ci * omega_x * x2 - 1.0_dp) * exp(ci * omega_x * x2) + &
+                (1.0_dp - ci * omega_x * x1) * exp(ci * omega_x * x1) &
+              ) &
+              / (- omega_x * omega_x)
+            Intxy = Intxy * &
+              ( &
+                (ci * omega_y * y2 - 1.0_dp) * exp(ci * omega_y * y2) + &
+                (1.0_dp - ci * omega_y * y1) * exp(ci * omega_y * y1) &
+              ) &
+              / (- omega_y * omega_y)
+
+            res = res &
+              + (q11 - q12 - q21 + q22) * Intxy &
+              + (- q11 * y2 + q21 * y2 + q12 * y1 - q22 * y1) * Intx &
+              + (- q11 * x2 + q21 * x1 + q12 * x2 - q22 * x1) * Inty &
+              + (q11 * x2 * y2 - q21 * x1 * y2 - q12 * x2 * y1 + q22 * x1 * y1) * Int
+          end do
+        end do
+        res = res / (this%x(2) - this%x(1)) / (this%y(2) - this%y(1))
+      end if
     end block
   end procedure integrate
 
@@ -315,6 +429,8 @@ implicit none (type, external)
         value = this%a_y, error = error)
       call h%attribute_put(path = "f_data", attribute_name = "b_y", &
         value = this%b_y, error = error)
+      call h%attribute_put(path = "f_data", attribute_name = "symmetric_four_quadrants", &
+        value = merge(1_i4, 0_i4, this%symmetric_four_quadrants), error = error)
 
       call h%dataset_put(path = "f_data.x", value = this%x, error = error)
       call h%dataset_put(path = "f_data.y", value = this%y, error = error)

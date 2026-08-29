@@ -41,6 +41,8 @@ private
     real(dp), allocatable :: x(:), y(:)
     real(dp) :: a_x, b_x, a_y, b_y
 
+    logical :: symmetric_four_quadrants
+
     contains
     generic :: init => init_from_file, init_from_function
     procedure, private, pass(this) :: init_from_file
@@ -52,7 +54,9 @@ private
   end type filon_like_integrating_uniform_bilinear_type
 
   interface
-    module subroutine init_from_function(this, f, a_x, b_x, a_y, b_y, N_x, N_y, error, mask_f)
+    module subroutine init_from_function( &
+      this, f, a_x, b_x, a_y, b_y, N_x, N_y, error, mask_f, symmetric_four_quadrants &
+    )
     implicit none (type, external)
       class(filon_like_integrating_uniform_bilinear_type), intent(inout) :: this
       procedure(integrated_function_type) :: f
@@ -85,6 +89,7 @@ private
       !>
       !> for describing an arbitrary domain within the rectangular boundaries
       procedure(mask_function_type), optional :: mask_f
+      logical, optional, intent(in) :: symmetric_four_quadrants
     end subroutine init_from_function
     !> the file must have the format produced by save_to_file.
     module subroutine init_from_file(this, file, error)
