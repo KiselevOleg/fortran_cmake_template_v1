@@ -16,6 +16,7 @@ public
     "oscillation_integration___integrating_on_uniform_5point_test"
 
   character(len = *), parameter :: test_file_name = "test_hdf5.h5"
+  character(len = *), parameter :: mask_with_test_file_name = "mask_with_test_hdf5.h5"
 
   complex(dp), parameter :: ci = (0.0_dp, 1.0_dp)
 
@@ -187,6 +188,81 @@ contains
 
     call check_if_error_is_not_thrown(error)
   end subroutine create_close_file_test
+  @test
+  subroutine mask_test()
+  implicit none (type, external)
+    type(filon_like_integrating_uniform_bilinear_type) :: integrator
+    type(exception_type) :: error
+
+    call integrator%init( &
+      f = f2, a_x = 0.0_dp, b_x = 4.0_dp, a_y = - 1.0_dp, b_y = 3.0_dp, &
+      N_x = 101_i4, N_y = 51_i4, &
+      error = error, mask_f = mask &
+    )
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = &
+        res_for_f2( &
+          a_x = 0.0_dp, b_x = 2.0_dp, a_y = 1.0_dp, b_y = 3.0_dp, &
+          omega_x = 20.0_dp, omega_y = 10.0_dp &
+        ), &
+      actual = integrator%integrate(omega_x = 20.0_dp, omega_y = 10.0_dp), &
+      tolerance = 1e-5_dp, &
+      message = "incorrect result" &
+    )
+
+    call check_if_error_is_not_thrown(error)
+
+    contains
+    pure logical function mask(x, y) result(res)
+    implicit none (type, external)
+      real(dp), intent(in) :: x
+      real(dp), intent(in) :: y
+
+      res = x < 2.00001_dp .and. y > 0.99999_dp
+    end function mask
+  end subroutine mask_test
+  @test
+  subroutine mask_with_file_test()
+  implicit none (type, external)
+    type(filon_like_integrating_uniform_bilinear_type) :: integrator
+    type(exception_type) :: error
+
+    block
+      type(filon_like_integrating_uniform_bilinear_type) :: h
+      call h%init( &
+        f = f2, a_x = 0.0_dp, b_x = 4.0_dp, a_y = - 1.0_dp, b_y = 3.0_dp, &
+        N_x = 101_i4, N_y = 51_i4, &
+        error = error, mask_f = mask &
+      )
+      call h%save_to_file(mask_with_test_file_name, error)
+      call check_if_error_is_not_thrown(error)
+    end block
+
+    call integrator%init(mask_with_test_file_name, error)
+    call check_if_error_is_not_thrown(error)
+    call assertEqual(&
+      expected = &
+        res_for_f2( &
+          a_x = 0.0_dp, b_x = 2.0_dp, a_y = 1.0_dp, b_y = 3.0_dp, &
+          omega_x = 20.0_dp, omega_y = 10.0_dp &
+        ), &
+      actual = integrator%integrate(omega_x = 20.0_dp, omega_y = 10.0_dp), &
+      tolerance = 1e-5_dp, &
+      message = "incorrect result" &
+    )
+
+    call check_if_error_is_not_thrown(error)
+
+    contains
+    pure logical function mask(x, y) result(res)
+    implicit none (type, external)
+      real(dp), intent(in) :: x
+      real(dp), intent(in) :: y
+
+      res = x < 2.00001_dp .and. y > 0.99999_dp
+    end function mask
+  end subroutine mask_with_file_test
 
 
 
@@ -380,6 +456,15 @@ contains
 
       if (exists) then
         call execute_command_line("rm -f " // test_file_name)
+      end if
+    end block
+    block
+      logical :: exists
+
+      inquire(file = mask_with_test_file_name, exist = exists)
+
+      if (exists) then
+        call execute_command_line("rm -f " // mask_with_test_file_name)
       end if
     end block
   end subroutine BeforeAll

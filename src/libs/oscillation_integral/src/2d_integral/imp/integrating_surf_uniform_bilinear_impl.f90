@@ -93,6 +93,7 @@ implicit none (type, external)
 
         this%y(j) = y
       end do
+      this%f = 0.0_dp
       do i = 1_i4, N_x_actual
         do j = 1_i4, N_y_actual
           if (present(mask_f)) then
