@@ -25,14 +25,14 @@ implicit none (type, external)
       call error%throw_if_not ( &
         where = module_name // "." // procedure_name, &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
-        message = "a < b is requiered", &
+        message = "a < b is required", &
         ! code = 0_i4, &
         condition = a < b .and. .not. equals(a, b, 1.0e-5_dp) &
       )
       call error%throw_if_not ( &
         where = module_name // "." // procedure_name, &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
-        message = "N > 5 is requiered", &
+        message = "N > 5 is required", &
         ! code = 0_i4, &
         condition = N > 5_i4 &
       )
@@ -100,7 +100,7 @@ implicit none (type, external)
       call error%throw_if_not ( &
         where = module_name // "." // procedure_name, &
         kind_type = EXCEPTION_KIND_TYPE_ERROR, &
-        message = "a < b is requiered", &
+        message = "a < b is required", &
         ! code = 0_i4, &
         condition = this%a < this%b .and. .not. equals(this%a, this%b, 1.0e-5_dp) &
       )

@@ -73,7 +73,7 @@ private
     !> $\int_a^b f(x) e^{i\omega x} dx, \omega \rightarrow \infty$
     !>
     !> it is highly recommended to guarantee \theta = \omega * h > 0.5, h = step (~ (b - a) / N)
-    !> due to the realization constrains
+    !> due to the realization constraints
     pure complex(dp) module function integrate(this, omega) result(res)
     implicit none (type, external)
       class(filon_like_integrating_uniform_3points_type), intent(in) :: this
