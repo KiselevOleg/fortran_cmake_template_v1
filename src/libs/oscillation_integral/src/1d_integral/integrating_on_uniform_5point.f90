@@ -8,7 +8,7 @@
 !> $\int_a^b f(x) e^{i\omega x} dx, \omega \rightarrow \infty$
 !>
 !> The integrand amplitude f(x) is sampled on a uniform grid and approximated
-!> by a polynomial on consecutive three-point stencils. The resulting
+!> by a polynomial on consecutive 5-point stencils. The resulting
 !> polynomial is integrated analytically against exp(i * omega * x)
 module integrating_on_uniform_5point
 use system_exception___exception, only: exception_type, assignment(=), &
