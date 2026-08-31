@@ -47,7 +47,7 @@ foreach(file ${SRC_FILES})
     )
   endif ()
 
-  list(APPEND OUTPUT_FILE_NAMES ${module_name})
+  list(APPEND OUTPUT_FILE_NAMES ${output_file})
 endforeach()
 
 foreach(file ${SRC_FILES})
