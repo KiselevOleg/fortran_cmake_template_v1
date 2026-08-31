@@ -39,11 +39,10 @@ target_compile_options(flags_features INTERFACE
   -fbacktrace
   -fno-unsafe-math-optimizations
   -ffp-contract=off
-  -flto
 )
 
 if (ENABLE_PREPROCESSOR_STATE)
-  target_compile_options(flags_features INTERFACE -cpp)
+  target_compile_options(flags_features INTERFACE $<$<COMPILE_LANGUAGE:Fortran>:-cpp>)
 endif ()
 
 if (ENABLE_OPENMP AND NOT ENABLE_SANITIZERS)
@@ -65,12 +64,19 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
 
   if (ENABLE_LTO)
     include(CheckIPOSupported)
-    check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error)
+    check_ipo_supported(
+      RESULT ipo_supported
+      OUTPUT ipo_error
+      LANGUAGES Fortran
+    )
     if (ipo_supported)
       set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
     else ()
       message(WARNING "IPO/LTO not supported: ${ipo_error}")
     endif ()
+    # target_compile_options(flags_features INTERFACE
+    #   -flto
+    # )
   endif ()
 elseif (CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_options(flags_build_type INTERFACE
